@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning( disable: 4251 )
 
 #ifdef HZ_PLATFORM_WINDOWS
 	#ifdef HZ_BUILD_DLL

@@ -4,10 +4,26 @@ workspace "Hazel"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+
+-- Include directories relative to root folder (solution directory)
+IncludeDir = {}
+IncludeDir["GLFW"] = "Hazel/vendor/GLFW/include"
+IncludeDir["Glad"] = "Hazel/vendor/Glad/include"
+IncludeDir["ImGui"] = "Hazel/vendor/imgui"
+
+
+include "Hazel/vendor/GLFW"
+include "Hazel/vendor/Glad"
+include "Hazel/vendor/imgui"
+
+
 project "Hazel"
     location "Hazel"
     kind "SharedLib"
     language "C++"
+    staticruntime "Off"
+
+
 
     targetdir("bin/".. outputdir .."/%{prj.name}")
     objdir("bin-int/".. outputdir .."/%{prj.name}")
@@ -24,18 +40,31 @@ project "Hazel"
     includedirs
     {
         "%{prj.name}/src",
-        "%{prj.name}/vendor/spdlog/include"
+        "%{prj.name}/vendor/spdlog/include",
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Glad}",
+        "%{IncludeDir.ImGui}"
+
+    }
+
+    links
+    {
+        "GLFW",
+        "Glad",
+        "ImGui",
+        "opengl32.lib"
     }
 
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "On"
         systemversion "latest"
+
 
         defines
         {
             "HZ_PLATFORM_WINDOWS", 
-            "HZ_BUILD_DLL"
+            "HZ_BUILD_DLL",
+            "GLFW_INCLUDE_NONE"
         } 
 
         postbuildcommands 
@@ -46,20 +75,26 @@ project "Hazel"
 
     filter "configurations:Debug"
         defines "HZ_DEBUG"
+        runtime "Debug"
         symbols "On"
+        
 
-    filter "configurations:Debug"
+    filter "configurations:Release"
         defines "HZ_RELEASE"
+        runtime "Release"
         optimize "On"
     
-    filter "configurations:Debug"
+    filter "configurations:Dist"
         defines "HZ_DIST"
+        runtime "Release"
         optimize "On"
 
 project "Sandbox"
     location "Sandbox"
     kind "ConsoleApp"
     language "C++"
+    staticruntime "off"
+
 
     targetdir("bin/".. outputdir .."/%{prj.name}")
     objdir("bin-int/".. outputdir .."/%{prj.name}")
@@ -80,7 +115,6 @@ project "Sandbox"
     
     filter "system:windows"
         cppdialect "C++17"
-        staticruntime "On"
         systemversion "latest"
 
         defines
@@ -90,13 +124,17 @@ project "Sandbox"
 
     filter "configurations:Debug"
         defines "HZ_DEBUG"
+        staticruntime "Off"
+        runtime "Debug"
         symbols "On"
 
-    filter "configurations:Debug"
+    filter "configurations:Release"
         defines "HZ_RELEASE"
+        runtime "Release"
         optimize "On"
 
-    filter "configurations:Debug"
+    filter "configurations:Dist"
         defines "HZ_DIST"
+        runtime "Release"
         optimize "On"
 

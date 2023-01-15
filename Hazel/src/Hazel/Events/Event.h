@@ -1,7 +1,6 @@
 #pragma once
-
-#include "Hazel/Core.h"
-
+#include"Hazel/Core.h"
+#include<sstream>
 
 
 namespace Hazel {
@@ -67,9 +66,8 @@ namespace Hazel {
 		{
 		}
 
-		// F will be deduced by the compiler
 		template<typename T>
-		bool Dispatch(EventFn<T>& func)
+		bool Dispatch(EventFn<T> func)
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{

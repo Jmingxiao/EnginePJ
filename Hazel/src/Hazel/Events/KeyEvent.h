@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Event.h"
+#include "Hazel/Events/Event.h"
 
 
 namespace Hazel {
@@ -54,7 +54,7 @@ namespace Hazel {
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
-	/*class HAZEL_API KeyTypedEvent : public KeyEvent
+	class HAZEL_API KeyTypedEvent : public KeyEvent
 	{
 	public:
 		KeyTypedEvent(const int keycode)
@@ -68,5 +68,5 @@ namespace Hazel {
 		}
 
 		EVENT_CLASS_TYPE(KeyTyped)
-	};*/
+	};
 }

@@ -1,2 +1,2 @@
 # EnginePJ
-Hazel engine project
+Mint engine project

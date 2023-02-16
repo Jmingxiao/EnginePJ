@@ -20,7 +20,7 @@ namespace Mint {
 
 		static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform = glm::mat4(1.0f));
 
-		static void Submit(const Ref<Shader>& shader,Model* model, const glm::mat4& transform = glm::mat4(1.0f));
+		static void Submit(const Ref<Shader>& shader, Model* model,  bool submitmat = true, const glm::mat4& transform = glm::mat4(1.0f) );
 
 		static RenderAPI::API GetAPI() { return RenderAPI::GetAPI(); }
 	private:

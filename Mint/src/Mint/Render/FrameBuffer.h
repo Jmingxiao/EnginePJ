@@ -53,6 +53,7 @@ public:
 	virtual void Bind() = 0;
 	virtual void Unbind() = 0;
 
+	virtual void Blit(const Ref<Framebuffer>& other) = 0;
 	virtual void Resize(uint32_t width, uint32_t height) = 0;
 	virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
 
@@ -61,7 +62,7 @@ public:
 	virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
 
 	virtual const FBSpecification& GetSpecification() const = 0;
-
+	virtual const uint32_t GetID() = 0;
 	static Ref<Framebuffer> Create(const FBSpecification& spec);
 };
 

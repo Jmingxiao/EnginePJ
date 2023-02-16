@@ -1,0 +1,265 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Dist|x64">
+      <Configuration>Dist</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FD15897C-E94C-8A0D-9239-70107E4F060F}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Mint</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>..\bin\Debug-windows-x86_64\Mint\</OutDir>
+    <IntDir>..\bin-int\Debug-windows-x86_64\Mint\</IntDir>
+    <TargetName>Mint</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\bin\Release-windows-x86_64\Mint\</OutDir>
+    <IntDir>..\bin-int\Release-windows-x86_64\Mint\</IntDir>
+    <TargetName>Mint</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <OutDir>..\bin\Dist-windows-x86_64\Mint\</OutDir>
+    <IntDir>..\bin-int\Dist-windows-x86_64\Mint\</IntDir>
+    <TargetName>Mint</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>MT_PLATFORM_WINDOWS;MT_BUILD_DLL;GLFW_INCLUDE_NONE;MT_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <MinimalRebuild>false</MinimalRebuild>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>MT_PLATFORM_WINDOWS;MT_BUILD_DLL;GLFW_INCLUDE_NONE;MT_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>MT_PLATFORM_WINDOWS;MT_BUILD_DLL;GLFW_INCLUDE_NONE;MT_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Mint.h" />
+    <ClInclude Include="src\Mint\Audio\AudioErrorCheck.h" />
+    <ClInclude Include="src\Mint\Audio\AudioListener.h" />
+    <ClInclude Include="src\Mint\Audio\MusicBuffer.h" />
+    <ClInclude Include="src\Mint\Audio\SoundEffect.h" />
+    <ClInclude Include="src\Mint\Audio\SoundEffectLib.h" />
+    <ClInclude Include="src\Mint\Core\Application.h" />
+    <ClInclude Include="src\Mint\Core\Base.h" />
+    <ClInclude Include="src\Mint\Core\EntryPoint.h" />
+    <ClInclude Include="src\Mint\Core\Input.h" />
+    <ClInclude Include="src\Mint\Core\KeyCodes.h" />
+    <ClInclude Include="src\Mint\Core\Layer.h" />
+    <ClInclude Include="src\Mint\Core\LayerStack.h" />
+    <ClInclude Include="src\Mint\Core\Log.h" />
+    <ClInclude Include="src\Mint\Core\TimeStep.h" />
+    <ClInclude Include="src\Mint\Core\Timer.h" />
+    <ClInclude Include="src\Mint\Core\UUID.h" />
+    <ClInclude Include="src\Mint\Core\Window.h" />
+    <ClInclude Include="src\Mint\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\Mint\Events\Event.h" />
+    <ClInclude Include="src\Mint\Events\KeyEvent.h" />
+    <ClInclude Include="src\Mint\Events\MouseEvent.h" />
+    <ClInclude Include="src\Mint\ImGui\ImGuiLayer.h" />
+    <ClInclude Include="src\Mint\Math\AxisAligned.h" />
+    <ClInclude Include="src\Mint\Physics\BasicShapes.h" />
+    <ClInclude Include="src\Mint\Physics\PhysicsTimer.h" />
+    <ClInclude Include="src\Mint\Render\Buffer.h" />
+    <ClInclude Include="src\Mint\Render\Camera\Camera.h" />
+    <ClInclude Include="src\Mint\Render\Camera\EditorCamera.h" />
+    <ClInclude Include="src\Mint\Render\Camera\PerspectiveCamera.h" />
+    <ClInclude Include="src\Mint\Render\Camera\SceneCamera.h" />
+    <ClInclude Include="src\Mint\Render\FrameBuffer.h" />
+    <ClInclude Include="src\Mint\Render\GraphicContext.h" />
+    <ClInclude Include="src\Mint\Render\Model.h" />
+    <ClInclude Include="src\Mint\Render\RenderAPI.h" />
+    <ClInclude Include="src\Mint\Render\RenderCommand.h" />
+    <ClInclude Include="src\Mint\Render\Renderer.h" />
+    <ClInclude Include="src\Mint\Render\Renderer3D.h" />
+    <ClInclude Include="src\Mint\Render\Shader.h" />
+    <ClInclude Include="src\Mint\Render\Texture.h" />
+    <ClInclude Include="src\Mint\Render\VertexArray.h" />
+    <ClInclude Include="src\Mint\Scene\Components.h" />
+    <ClInclude Include="src\Mint\Scene\Entity.h" />
+    <ClInclude Include="src\Mint\Scene\Scene.h" />
+    <ClInclude Include="src\Mint\Util\FileSystem.h" />
+    <ClInclude Include="src\Mint\Util\React3dUtil.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFrameBuffer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRenderAPI.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRenderer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
+    <ClInclude Include="src\pch.h" />
+    <ClInclude Include="vendor\entt\entt.hpp" />
+    <ClInclude Include="vendor\stb_image\stb_image.h" />
+    <ClInclude Include="vendor\tinyobjloader\tiny_obj_loader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Mint\Audio\AudioListener.cpp" />
+    <ClCompile Include="src\Mint\Audio\MusicBuffer.cpp" />
+    <ClCompile Include="src\Mint\Audio\SoundEffect.cpp" />
+    <ClCompile Include="src\Mint\Audio\SoundEffectLib.cpp" />
+    <ClCompile Include="src\Mint\Core\Application.cpp" />
+    <ClCompile Include="src\Mint\Core\Layer.cpp" />
+    <ClCompile Include="src\Mint\Core\LayerStack.cpp" />
+    <ClCompile Include="src\Mint\Core\Log.cpp" />
+    <ClCompile Include="src\Mint\Core\TimeStep.cpp" />
+    <ClCompile Include="src\Mint\Core\UUID.cpp" />
+    <ClCompile Include="src\Mint\ImGui\ImGuiBuild.cpp" />
+    <ClCompile Include="src\Mint\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Mint\Math\AxisAligned.cpp" />
+    <ClCompile Include="src\Mint\Render\Buffer.cpp" />
+    <ClCompile Include="src\Mint\Render\Camera\EditorCamera.cpp" />
+    <ClCompile Include="src\Mint\Render\Camera\PerspectiveCamera.cpp" />
+    <ClCompile Include="src\Mint\Render\Camera\SceneCamera.cpp" />
+    <ClCompile Include="src\Mint\Render\FrameBuffer.cpp" />
+    <ClCompile Include="src\Mint\Render\Model.cpp" />
+    <ClCompile Include="src\Mint\Render\RenderAPI.cpp" />
+    <ClCompile Include="src\Mint\Render\RenderCommand.cpp" />
+    <ClCompile Include="src\Mint\Render\Renderer.cpp" />
+    <ClCompile Include="src\Mint\Render\Renderer3D.cpp" />
+    <ClCompile Include="src\Mint\Render\Shader.cpp" />
+    <ClCompile Include="src\Mint\Render\Texture.cpp" />
+    <ClCompile Include="src\Mint\Render\VertexArray.cpp" />
+    <ClCompile Include="src\Mint\Scene\Entity.cpp" />
+    <ClCompile Include="src\Mint\Scene\Scene.cpp" />
+    <ClCompile Include="src\Mint\Util\React3dUtil.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFrameBuffer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRenderAPI.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
+    <ClCompile Include="src\pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\stb_image\stb_image.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="vendor\imgui\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\react3d\react3d.vcxproj">
+      <Project>{AB39DB3D-1719-5AD9-2031-E5AF8C8FC03A}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

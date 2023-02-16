@@ -10,3 +10,6 @@
 [submodule "Mint/vendor/glm"]
 	path = Mint/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "Mint/vendor/react3d"]
+	path = Mint/vendor/react3d
+	url = https://github.com/DanielChappuis/reactphysics3d

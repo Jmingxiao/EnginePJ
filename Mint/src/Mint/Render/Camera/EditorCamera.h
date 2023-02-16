@@ -2,6 +2,7 @@
 #include "PerspectiveCamera.h"
 #include "Mint/Core/TimeStep.h"
 #include "Mint/Events/MouseEvent.h"
+#include "Mint/Events/KeyEvent.h"
 #include "Mint/Events/Event.h"
 
 MT_NAMESPACE_BEGIN
@@ -23,8 +24,8 @@ private:
 	void RecalculateProjMatrix();
 	void MouseRotation(const glm::vec2& delta,bool constrain =true);
 	void KeyPress(float dt);
-private:
 
+private:
 	bool firstmouse =true;
 	glm::vec2 previousmouse = {0.0f,0.0f};
 	float cameraSpeed=2.5f;

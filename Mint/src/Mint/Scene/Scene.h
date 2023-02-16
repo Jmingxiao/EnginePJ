@@ -1,12 +1,16 @@
 #pragma once
-
-#include<entt/entt.hpp>
 #include "Mint/Core/TimeStep.h"
-#include "Components.h"
 #include "Mint/Core/UUID.h"
-#include "Entity.h"
+#include "Mint/Render/Camera/EditorCamera.h"
+#include "Components.h"
+#include "entt.hpp"
+
+
 
 MT_NAMESPACE_BEGIN
+
+class Entity;
+class PhysicsTimer;
 
 class Scene
 {
@@ -21,21 +25,65 @@ public:
 	Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
 	void DestroyEntity(const Entity spEntity);
 
+
+	void OnRuntimeStart();
+	void OnRuntimeStop();
+
+	void OnSimulationStart();
+	void OnSimulationStop();
+
 	void OnUpdate(const Timestep& timeStep);
-	void OnViewPortResize(uint32_t uiWidth, uint32_t uiHeight);
-	const Ref<entt::registry>& Registry()const;
+	void OnUpdateSimulation(Timestep ts, EditorCamera& camera);
+	void OnUpdateEditor(Timestep ts, EditorCamera& camera);
+	void OnViewportResize(uint32_t width, uint32_t height);
+
+	void DuplicateEntity(Entity entity);
 
 	Entity FindEntityByName(std::string_view name);
 	Entity GetEntityByUUID(UUID uuid);
+	Entity GetMainCameraEntity();
 
+	bool IsRunning() const { return m_IsRunning; }
+	bool IsPaused() const { return m_IsPaused; }
+
+	void SetPaused(bool paused) { m_IsPaused = paused; }
+
+	void Step(int frames = 1);
+
+	template<typename... Components>
+	auto GetAllEntitiesWith()
+	{
+		return m_registry.view<Components...>();
+	}
+
+private:
+	template<typename T>
+	void OnComponentAdded(Entity entity, T& component);
+
+	void OnPhysicsStart();
+	void OnPhysicsStop();
+	void RenderScene(EditorCamera& camera);
 
 private:
 	
 	bool m_IsRunning = false;
 	bool m_IsPaused = false;
+	int m_StepFrames = 0;
 	uint32_t m_width =0,m_height=0;
-	Ref<entt::registry> m_registry;
+	entt::registry m_registry;
 	std::unordered_map<UUID, entt::entity> m_entitymap;
+
+
+
+	rp3d::PhysicsCommon m_physicsCommon;
+	rp3d::PhysicsWorld* m_world;
+	Ptr<PhysicsTimer> m_phystimer;
+
+	friend class Entity;
+	friend class SceneHierarchyPanel;
 };
 
+
+
 MT_NAMESPACE_END
+

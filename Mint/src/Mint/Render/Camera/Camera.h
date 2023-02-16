@@ -5,9 +5,9 @@
 
 namespace Mint{
 
-	enum class CameraType 
+	enum class ProjectionType 
 	{
-		Orthographic=0,Pespective,
+		Perspective=0, Orthographic
 	};
 	struct frustum {
 		enum class side {
@@ -88,15 +88,14 @@ namespace Mint{
 		virtual ~Camera() = default;
 		const glm::mat4& GetProjection() const { return m_proj; }
 		const glm::mat4& GetViewProjectionMatrix() const { return std::move(m_proj * m_view); }
+		virtual void SetViewMatrix(const glm::mat4 view) { m_view = view; }
 
 	protected:
 		glm::mat4 m_proj = glm::mat4(1.0f);
 		glm::mat4 m_view = glm::mat4(1.0f);
 
-		
-
 	public:
-		CameraType type = CameraType::Orthographic;
+		ProjectionType type = ProjectionType::Orthographic;
 	};
 
 

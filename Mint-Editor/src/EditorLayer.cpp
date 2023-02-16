@@ -1,50 +1,56 @@
 #include "EditorLayer.h"
 #include <imgui/imgui.h>
+//#include <ImGuizmo.h>
 
 EditorLayer::EditorLayer()
-	:Layer("Example"), music(MusicBuffer("assets/musics/liz.mp3"))
+	:Layer("Example")
 {
-	camera.SetPosition(glm::vec3(0, 5, 20));
-	va = VertexArray::Create();
-	std::vector<float> vertices{
-	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-	 0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
-	 0.0f,  0.5f, 0.0f, 1.0f, 1.0f,
-	};
+}
 
-	Ref<VertexBuffer> vb = VertexBuffer::Create(&vertices[0], static_cast<uint32_t>(vertices.size()) * sizeof(float));
-	BufferLayout layout = {
-		{DataType::Float3,"a_position"},
-		{DataType::Float2,"a_textureCoord"}
-	};
-	vb->SetLayout(layout);
-	va->AddVertexBuffer(vb);
-
-	uint32_t indices[3] = { 0, 1, 2 };
-	Ref<IndexBuffer> ib = IndexBuffer::Create(indices, 3);
-	va->SetIndexBuffer(ib);
-
-	//Shader	
-	std::vector<ShaderInfo> vecColorShaderInfo
-	{
-		{ShaderType::VETEX_SHADER,"assets/shaders/color.vert"},
-		{ShaderType::FRAGMENT_SHADER,"assets/shaders/color.frag"}
-	};
-	shader_t = Shader::Create(vecColorShaderInfo, "testshader");
-
-	model = Model::loadModelFromOBJ("assets/models/wheatley.obj");
-	AudioListener::Init();
-
-	//music.Play();
-	sound = SoundEffectsLibrary::Get()->Load("assets/sounds/sand.ogg");
-	//soundplayer.SetLooping(true);
-	//soundplayer.Play(sound);
+void EditorLayer::OnAttach()
+{
 	FBSpecification spec;
 	spec.Attachments = { FBTextureFormat::RGBA8, FBTextureFormat::RED_INTEGER, FBTextureFormat::Depth };
 	spec.Width = Application::Get().GetWindow().GetWidth();
 	spec.Height = Application::Get().GetWindow().GetHeight();
+	spec.Samples = 4;
 	fbo = Framebuffer::Create(spec);
 
+	FBSpecification specinter;
+	specinter.Attachments = { FBTextureFormat::RGBA8};
+	specinter.Width = Application::Get().GetWindow().GetWidth();
+	specinter.Height = Application::Get().GetWindow().GetHeight();
+	intermidefbo = Framebuffer::Create(specinter);
+
+
+
+	m_EditorScene = CreateRef<Scene>();
+	m_ActiveScene = m_EditorScene;
+
+	m_planeEntity = m_ActiveScene->CreateEntity();
+	m_planeEntity.AddComponent<MeshRendererComponent>(Model::GetDefaultModelPath(DefualtModelType::Plane),"plane");
+	m_planeEntity.AddComponent<RigidBodyComponent>(RigidBodyComponent::BodyType::Static);
+	Box* box = new Box();
+	box->m_half_extents = glm::vec3(10.0f,1.0,10.0f);
+	m_planeEntity.AddComponent<ColliderComponent>(box,Gshape::box);
+
+	m_BoxEntity = m_ActiveScene->CreateEntity();
+	m_BoxEntity.AddComponent<MeshRendererComponent>(Model::GetDefaultModelPath(DefualtModelType::Box), "box");
+	auto& boxts = m_BoxEntity.GetComponent<TransformComponent>();
+	boxts.Translation = glm::vec3(0.f, 5.0f, 0.0f);
+	boxts.Rotation = glm::quat(glm::vec3(60,0,60));
+	m_BoxEntity.AddComponent<RigidBodyComponent>(RigidBodyComponent::BodyType::Dynamic);
+	Box* box1 = new Box();
+	m_BoxEntity.AddComponent<ColliderComponent>(box1, Gshape::box);
+
+	editorCam = EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
+	editorCam.SetPosition({ 0.0f,5.0f,15.0f });
+
+	m_ActiveScene->OnSimulationStart();
+}
+
+void EditorLayer::OnDetach()
+{
 }
 
 void EditorLayer::OnUpdate(Timestep ts)
@@ -56,17 +62,27 @@ void EditorLayer::OnUpdate(Timestep ts)
 		(spec.Width != viewportSize.x || spec.Height != viewportSize.y))
 	{
 		fbo->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
-		camera.SetViewportSize(viewportSize.x, viewportSize.y);
+		intermidefbo->Resize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
+		editorCam.SetViewportSize(viewportSize.x, viewportSize.y);
 	}
-
+	
+	Renderer3D::ResetStats();
 	fbo->Bind();
 	RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 	RenderCommand::Clear();
-	camera.SetControlActive(!isfocused);
-	camera.OnUpdate(ts);
-	Renderer::BeginScene(camera);
-	Renderer::Submit(shader_t, model);
+	editorCam.SetControlActive(!isfocused);
+	editorCam.OnUpdate(ts);
+	m_ActiveScene->OnUpdateSimulation(ts, editorCam);
+	auto& boxts = m_planeEntity.GetComponent<ColliderComponent>();
+	
+	//Renderer::BeginScene(editorCam);
+	//Renderer::Submit(shader_t, planeModel,false);
 	fbo->Unbind();
+
+	intermidefbo->Blit(fbo);
+
+	intermidefbo->Unbind();
+
 }
 
 void EditorLayer::OnImGuiRender()
@@ -139,7 +155,8 @@ void EditorLayer::OnImGuiRender()
 	ImGui::End();
 
 
-
+	m_sceneHierarchyPanel.OnImGuiRender();
+	//engine states 
 	ImGui::Begin("Settings");
 	auto stats = Mint::Renderer3D::GetStats();
 	ImGui::Text("Draw Calls: %d", stats.DrawCalls);
@@ -153,7 +170,7 @@ void EditorLayer::OnImGuiRender()
 	Application::Get().GetImGuiLayer()->BlockEvents(!ishoved);
 	auto m_vec2RenderViewPort = ImGui::GetContentRegionAvail();
 	viewportSize = { m_vec2RenderViewPort.x,m_vec2RenderViewPort.y };
-	uint64_t textureID = fbo->GetColorAttachmentRendererID();
+	uint64_t textureID = intermidefbo->GetColorAttachmentRendererID();
 	ImGui::Image(reinterpret_cast<void*>(textureID), ImVec2(viewportSize.x,viewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::End();
 	ImGui::PopStyleVar();
@@ -161,6 +178,21 @@ void EditorLayer::OnImGuiRender()
 
 void EditorLayer::OnEvent(Mint::Event& event)
 {
-	camera.OnEvent(event);
+	if (m_SceneState == SceneState::Edit)
+	{
+		editorCam.OnEvent(event);
+	}
+	EventDispatcher dispatcher(event);
+	dispatcher.Dispatch<KeyPressedEvent>(MT_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+	dispatcher.Dispatch<MouseButtonPressedEvent>(MT_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
+}
 
+bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+{
+	return false;
+}
+
+bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+{
+	return false;
 }

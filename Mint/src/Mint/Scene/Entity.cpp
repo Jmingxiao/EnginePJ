@@ -3,27 +3,14 @@
 
 MT_NAMESPACE_BEGIN
 
-
-Entity::Entity()
-{
-	m_registry = CreateRef<entt::registry>();
-	m_entity = m_registry->create();
-}
-
-Entity::Entity(const Ref<entt::registry>& p_registry)
-	:m_registry(p_registry)
-{
-	m_entity = m_registry->create();
-}
-
-Entity::Entity(const Ref<entt::registry>& p_registry, const entt::entity& p_entity)
-	:m_registry(p_registry), m_entity(p_entity)
+Entity::Entity(entt::entity handle, Scene* scene)
+	: m_entity(handle), m_scene(scene)
 {
 }
 
 bool Entity::operator==(const Entity& entity) const
 {
-	return m_entity == entity.m_entity;
+	return m_entity == entity.m_entity&&m_scene==entity.m_scene;
 }
 
 bool Entity::operator!=(const Entity& entity) const
@@ -31,18 +18,5 @@ bool Entity::operator!=(const Entity& entity) const
 	return !(*this == entity);
 }
 
-Entity& Entity::operator=(const Entity& spEntity)
-{
-	m_entity = spEntity.m_entity;
-	m_registry = spEntity.m_registry;
-	return *this;
-}
-
-Ref<Entity>& Entity::operator=(const Ref<Entity>& spEntity)
-{
-	m_entity = spEntity->m_entity;
-	m_registry = spEntity->m_registry;
-	return std::move(Ref<Entity>(this));
-}
 
 MT_NAMESPACE_END

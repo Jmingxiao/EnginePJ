@@ -10,8 +10,11 @@
 #include"Mint/Core/Input.h"
 #include"Mint/Core/KeyCodes.h"
 
-
 #include"Mint/ImGui/ImGuiLayer.h"
+
+//scene
+#include "Mint/Scene/Entity.h"
+#include "Mint/Scene/Scene.h"
 
 //render 
 #include "Mint/Render/Renderer.h"
@@ -27,6 +30,7 @@
 
 #include"Mint/Render/Camera/EditorCamera.h"
 #include"Mint/Render/Camera/PerspectiveCamera.h"
+
 
 //audio
 #include"Mint/Audio/MusicBuffer.h"

@@ -13,7 +13,7 @@ public:
 
 	virtual void Bind() override;
 	virtual void Unbind() override;
-
+	virtual void Blit(const Ref<Framebuffer>& other) override;
 	virtual void Resize(uint32_t width, uint32_t height) override;
 	virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
 
@@ -22,7 +22,8 @@ public:
 	virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override { MT_ASSERT(index < m_ColorAttachments.size()); return m_ColorAttachments[index]; }
 
 	virtual const FBSpecification& GetSpecification() const override { return m_Specification; }
-private:
+	virtual const uint32_t GetID() { return m_RendererID; }
+protected:
 	uint32_t m_RendererID = 0;
 	FBSpecification m_Specification;
 

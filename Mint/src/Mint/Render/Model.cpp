@@ -8,12 +8,11 @@
 
 MT_NAMESPACE_BEGIN
 
+
+
 Model::~Model()
 {
-
 }
-
-
 
 Model* Model::loadModelFromOBJ(const std::string& path)
 {

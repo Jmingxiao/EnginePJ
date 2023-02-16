@@ -9,7 +9,7 @@ PerspectiveCamera::PerspectiveCamera(float p_fov, float p_aspectRatio, float p_n
 	:m_fov(p_fov), m_aspectRatio(p_aspectRatio), m_near(p_near), m_far(p_far),
 	Camera(glm::perspective(glm::radians(p_fov), p_aspectRatio, p_near, p_far))
 {
-	type = CameraType::Pespective;
+	type = ProjectionType::Perspective;
 	RecalculateViewMatrix();
 }
 

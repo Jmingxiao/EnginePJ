@@ -1,49 +1,60 @@
 #pragma once
 
-#include "entt/entt.hpp"
+#include "entt.hpp"
 #include "Mint/Core/UUID.h"
 #include "Components.h"
+#include "Scene.h"
+
 
 MT_NAMESPACE_BEGIN
+
 class Entity
 {
 public:
-	Entity();
+	Entity() = default;
 	Entity(const Entity& other) = default;
-	Entity(const Ref<entt::registry>& p_registry);
-	Entity(const Ref<entt::registry>& p_registry, const entt::entity& p_entity);
+	Entity(entt::entity handle, Scene* scene);
+
 
 	template<typename T, typename... Args>
 	T& AddComponent(Args&&... args)
 	{
 		MT_ASSERT(!HasComponent<T>(), "Entity already has component!");
-		return m_registry->emplace<T>(m_entity, std::forward<Args>(args)...);
+		T& component = m_scene->m_registry.emplace<T>(m_entity, std::forward<Args>(args)...);
+		m_scene->OnComponentAdded<T>(*this, component);
+		return component;;
+	}
+
+	template<typename T, typename... Args>
+	T& AddOrReplaceComponent(Args&&... args)
+	{
+		T& component = m_scene->m_registry.emplace_or_replace<T>(m_entity, std::forward<Args>(args)...);
+		m_scene->OnComponentAdded<T>(*this, component);
+		return component;
 	}
 
 	template<typename T>
 	T& GetComponent()
 	{
 		MT_ASSERT(HasComponent<T>(), "Entity does not has component!");
-		return m_registry->get<T>(m_entity);
+		return m_scene->m_registry.get<T>(m_entity);
 	}
 
 	template<typename T>
 	bool HasComponent()
 	{
-		return m_registry->has<T>(m_entity);
+		return m_scene->m_registry.has<T>(m_entity);
 	}
 
 	template<typename T>
 	void RemoveComponent()
 	{
-		m_registry->remove<T>(m_entity);
+		m_scene->m_registry.remove<T>(m_entity);
 	}
 
 
 	bool operator==(const Entity& p_entity) const;
 	bool operator!=(const Entity& p_entity) const;
-	Entity& operator=(const Entity& p_entity);
-	Ref<Entity>& operator=(const Ref<Entity>& p_entity);
 
 	operator bool() const { return m_entity != entt::null; }
 	operator entt::entity() const { return m_entity; }
@@ -53,7 +64,7 @@ public:
 	const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
 
 private:
-	Ref<entt::registry> m_registry;
-	entt::entity m_entity;
+	entt::entity m_entity{entt::null};
+	Scene* m_scene{nullptr};
 };
 MT_NAMESPACE_END

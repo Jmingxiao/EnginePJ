@@ -2,6 +2,7 @@ workspace "Mint"
     architecture "x64"
     startproject "Mint-Editor"
     configurations{ "Debug","Release","Dist"}
+    flags{ "MultiProcessorCompile"}
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -14,12 +15,16 @@ IncludeDir = {}
 IncludeDir["ImGui"] = "Mint/vendor/imgui"
 IncludeDir["stb_image"] = "Mint/vendor/stb_image"
 IncludeDir["objloader"] = "Mint/vendor/tinyobjloader"
+IncludeDir["react3d"] = "Mint/vendor/react3d/include"
+IncludeDir["entt"] = "Mint/vendor/entt"
+
 
 
 group "Dependencies"
     --include "Mint/vendor/GLFW"
     --include "Mint/vendor/Glad"
     include "Mint/vendor/imgui"
+    include "Mint/vendor/react3d"
 group ""
 
 project "Mint"
@@ -30,34 +35,38 @@ project "Mint"
     staticruntime "on"
 
 
-
     targetdir("bin/".. outputdir .."/%{prj.name}")
     objdir("bin-int/".. outputdir .."/%{prj.name}")
 
     pchheader "pch.h"
     pchsource "%{prj.name}/src/pch.cpp"
 
+    
+
     files
     {
         "%{prj.name}/src/**.h",
         "%{prj.name}/src/**.cpp",
-        --"%{prj.name}/vendor/glm/glm/**.hpp",
-        --"%{prj.name}/vendor/glm/glm/**.inl",
+        "%{prj.name}/vendor/entt/**.hpp",
 		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/stb_image/**.cpp",
         "%{prj.name}/vendor/tinyobjloader/**.h",
+        --"%{prj.name}/vendor/glm/glm/**.hpp",
+        --"%{prj.name}/vendor/glm/glm/**.inl",
     }
 
     includedirs
     {
         "%{prj.name}/src",
         "%{prj.name}/vendor/spdlog/include",
-        --"%{IncludeDir.GLFW}",
-        --"%{IncludeDir.Glad}",
-        --"%{IncludeDir.glm}",
         "%{IncludeDir.ImGui}",
 		"%{IncludeDir.stb_image}",
         "%{IncludeDir.objloader}",
+        "%{IncludeDir.entt}",
+        "%{IncludeDir.react3d}",
+        --"%{IncludeDir.GLFW}",
+        --"%{IncludeDir.Glad}",
+        --"%{IncludeDir.glm}",
     }
 
     links
@@ -65,6 +74,7 @@ project "Mint"
         --"GLFW",
         --"Glad",
         "ImGui",
+        "react3d",
         "opengl32.lib"
     }
 
@@ -117,6 +127,8 @@ project "Mint"
             "Mint/vendor/spdlog/include",
             "Mint/src",
             "Mint/vendor",
+            "%{IncludeDir.entt}",
+            "%{IncludeDir.react3d}",
             --"%{IncludeDir.glm}"
         }
         
@@ -129,7 +141,8 @@ project "Mint"
     
             defines
             {
-                "MT_PLATFORM_WINDOWS" 
+                "MT_PLATFORM_WINDOWS",
+	            "_CRT_SECURE_NO_WARNINGS"
             } 
     
         filter "configurations:Debug"
@@ -147,8 +160,6 @@ project "Mint"
             runtime "Release"
             optimize "on"
     
-    
-
 
     project "Mint-Editor"
         location "Mint-Editor"
@@ -171,6 +182,8 @@ project "Mint"
             "Mint/vendor/spdlog/include",
             "Mint/src",
             "Mint/vendor",
+            "%{IncludeDir.entt}",
+            "%{IncludeDir.react3d}",
             --"%{IncludeDir.glm}"
         }
     
@@ -182,7 +195,9 @@ project "Mint"
             systemversion "latest"
             defines
             {
-                "MT_PLATFORM_WINDOWS" 
+                "MT_PLATFORM_WINDOWS",
+	            "_CRT_SECURE_NO_WARNINGS"
+
             } 
         filter "configurations:Debug"
             defines "MT_DEBUG"

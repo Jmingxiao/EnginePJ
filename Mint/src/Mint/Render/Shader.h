@@ -18,6 +18,7 @@ enum class CompileType
 	LINK_STATUS = 0,
 	PROGRAM_STATUS
 };
+enum class BuiltinShaderType { simple = 0, pbr, custom };
 
 struct ShaderInfo
 {
@@ -55,14 +56,18 @@ protected:
 class ShaderLibrary
 {
 public:
+	void Init();
 	void Add(const std::string& name, const Ref<Shader>& shader);
 	void Add(const Ref<Shader>& shader);
 	Ref<Shader> Load(const std::vector<ShaderInfo>& vecShaderInfo, const std::string& name);
 	Ref<Shader> Get(const std::string& name);
+	Ref<Shader> GetDefaultShader(BuiltinShaderType type = BuiltinShaderType::simple);
 
 	bool Exists(const std::string& name) const;
 private:
 	std::unordered_map<std::string, Ref<Shader>> m_Shaders;
+	Ref<Shader> pbr;
+	Ref<Shader> simple;
 };
 
 

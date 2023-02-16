@@ -3,6 +3,14 @@
 #include "Mint/Render/Shader.h"
 MT_NAMESPACE_BEGIN
 
+static const std::string modelPath = "assets/models/";
+static const std::string dftModelPaths[] = 
+{"Box.obj","Sphere.obj","Capsule.obj","Plane.obj"};
+
+enum class DefualtModelType {
+	Box = 0,Sphere,Capsule,Plane
+};
+
 struct Material
 {
 	std::string m_name;
@@ -52,12 +60,15 @@ public:
 	// Vertex Array Object
 	uint32_t m_vaob;
 
-
 	static Model* loadModelFromOBJ(const std::string& path);
 	static void saveModelToOBJ(Model* model, std::string filename);
 	static void saveModelMaterialsToMTL(Model* model, std::string filename);
 	static void freeModel(Model* model);
 	static void render(const Model* model, const Ref<Shader>& shader, const bool submitMaterials = true, bool ssr = false);
+	static const std::string GetDefaultModelPath(DefualtModelType type)
+	{
+		return modelPath+dftModelPaths[(size_t)type];
+	}
 };
 
 MT_NAMESPACE_END

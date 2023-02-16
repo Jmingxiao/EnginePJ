@@ -40,12 +40,12 @@ void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexA
 	RenderCommand::DrawIndexed(vertexArray);
 }
 
-void Mint::Renderer::Submit(const Ref<Shader>& shader, Model* model, const glm::mat4& transform)
+void Mint::Renderer::Submit(const Ref<Shader>& shader, Model* model,bool submitmat, const glm::mat4& transform)
 {
 	shader->Bind();
 	shader->SetMat4("u_viewproj", s_SceneData->ViewProjectionMatrix);
 	shader->SetMat4("u_transform", transform);
-	Model::render(model, shader);
+	Model::render(model, shader, submitmat);
 
 }
 

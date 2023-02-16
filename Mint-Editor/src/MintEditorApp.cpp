@@ -15,7 +15,6 @@ public:
 	~EditorApp()
 	{
 	}
-
 };
 
 Application* CreateApplication()

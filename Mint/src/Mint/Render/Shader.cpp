@@ -39,6 +39,18 @@ namespace Mint {
         return content;
     }
 
+    void ShaderLibrary::Init()
+    {
+        std::vector<ShaderInfo> simpleShaderInfo
+        {
+            {ShaderType::VETEX_SHADER,"assets/shaders/color.vert"},
+            {ShaderType::FRAGMENT_SHADER,"assets/shaders/color.frag"}
+        };
+        simple = Shader::Create(simpleShaderInfo, "simple");
+        pbr    = Shader::Create(simpleShaderInfo, "pbr");
+
+    }
+
     void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
     {
         MT_ASSERT(!Exists(name), "Shader already exists!");
@@ -63,6 +75,17 @@ namespace Mint {
     {
         MT_ASSERT(Exists(name), "Shader not found!");
         return m_Shaders[name];
+    }
+
+    Ref<Shader> ShaderLibrary::GetDefaultShader(BuiltinShaderType type)
+    {
+        switch (type) 
+        {
+        case BuiltinShaderType::simple: return simple;
+        case BuiltinShaderType::pbr: return pbr;
+        }
+        MT_ASSERT(false, "Not A Deafult Shader Type!!!");
+        return nullptr;
     }
 
     bool ShaderLibrary::Exists(const std::string& name) const

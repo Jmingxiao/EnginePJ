@@ -187,6 +187,14 @@ void OpenGLFramebuffer::Unbind()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void OpenGLFramebuffer::Blit(const Ref<Framebuffer>& other)
+{
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, other->GetID());
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_RendererID);
+	glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, 
+		m_Specification.Width, m_Specification.Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
+
 void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
 {
 	if (width == 0 || height == 0 || width > s_MaxFramebufferSize || height > s_MaxFramebufferSize)

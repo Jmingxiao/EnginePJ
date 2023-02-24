@@ -10,6 +10,7 @@ enum class FBTextureFormat
 	None = 0,
 	// Color
 	RGBA8,
+	RGBA32,
 	RED_INTEGER,
 	// Depth/stencil
 	DEPTH24STENCIL8,

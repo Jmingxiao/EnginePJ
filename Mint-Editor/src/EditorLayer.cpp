@@ -1,6 +1,5 @@
 #include "EditorLayer.h"
 #include <imgui/imgui.h>
-//#include <ImGuizmo.h>
 
 EditorLayer::EditorLayer()
 	:Layer("Example")
@@ -22,31 +21,37 @@ void EditorLayer::OnAttach()
 	specinter.Height = Application::Get().GetWindow().GetHeight();
 	intermidefbo = Framebuffer::Create(specinter);
 
-
-
 	m_EditorScene = CreateRef<Scene>();
 	m_ActiveScene = m_EditorScene;
 
-	m_planeEntity = m_ActiveScene->CreateEntity();
-	m_planeEntity.AddComponent<MeshRendererComponent>(Model::GetDefaultModelPath(DefualtModelType::Plane),"plane");
+	m_planeEntity = m_ActiveScene->CreateEntity("Plane");
+	m_planeEntity.AddComponent<MeshRendererComponent>(Model::GetDefaultModelPath(DefualtModelType::Plane),"plane", BuiltinShaderType::pbr);
 	m_planeEntity.AddComponent<RigidBodyComponent>(RigidBodyComponent::BodyType::Static);
 	Box* box = new Box();
 	box->m_half_extents = glm::vec3(10.0f,1.0,10.0f);
-	m_planeEntity.AddComponent<ColliderComponent>(box,Gshape::box);
+	m_planeEntity.AddComponent<ColliderComponent>(box);
 
-	m_BoxEntity = m_ActiveScene->CreateEntity();
-	m_BoxEntity.AddComponent<MeshRendererComponent>(Model::GetDefaultModelPath(DefualtModelType::Box), "box");
+	m_BoxEntity = m_ActiveScene->CreateEntity("Box");
+	m_BoxEntity.AddComponent<MeshRendererComponent>(Model::GetDefaultModelPath(DefualtModelType::Box), "box", BuiltinShaderType::pbr);
 	auto& boxts = m_BoxEntity.GetComponent<TransformComponent>();
 	boxts.Translation = glm::vec3(0.f, 5.0f, 0.0f);
 	boxts.Rotation = glm::quat(glm::vec3(60,0,60));
 	m_BoxEntity.AddComponent<RigidBodyComponent>(RigidBodyComponent::BodyType::Dynamic);
 	Box* box1 = new Box();
-	m_BoxEntity.AddComponent<ColliderComponent>(box1, Gshape::box);
+	m_BoxEntity.AddComponent<ColliderComponent>(box1);
+
+	m_screenCam = m_ActiveScene->CreateEntity("Screen Camera");
+	m_screenCam.AddComponent<MeshRendererComponent>("assets/models/space-ship.obj", "spaceship", BuiltinShaderType::pbr);
+	auto& sctrans = m_screenCam.GetComponent<TransformComponent>();
+	sctrans.Translation = glm::vec3(0.f, 5.0f, 3.0f);
+	sctrans.Scale = glm::vec3(0.4f, 0.4f, 0.4f);
 
 	editorCam = EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 	editorCam.SetPosition({ 0.0f,5.0f,15.0f });
 
 	m_ActiveScene->OnSimulationStart();
+
+	m_sceneHierarchyPanel.SetContext(m_ActiveScene);
 }
 
 void EditorLayer::OnDetach()
@@ -73,7 +78,6 @@ void EditorLayer::OnUpdate(Timestep ts)
 	editorCam.SetControlActive(!isfocused);
 	editorCam.OnUpdate(ts);
 	m_ActiveScene->OnUpdateSimulation(ts, editorCam);
-	auto& boxts = m_planeEntity.GetComponent<ColliderComponent>();
 	
 	//Renderer::BeginScene(editorCam);
 	//Renderer::Submit(shader_t, planeModel,false);
@@ -156,6 +160,7 @@ void EditorLayer::OnImGuiRender()
 
 
 	m_sceneHierarchyPanel.OnImGuiRender();
+	m_contentPanel.OnImGuiRender();
 	//engine states 
 	ImGui::Begin("Settings");
 	auto stats = Mint::Renderer3D::GetStats();
@@ -167,7 +172,7 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Begin("View port");
 	ishoved = ImGui::IsWindowHovered();
 	isfocused = ImGui::IsWindowFocused();
-	Application::Get().GetImGuiLayer()->BlockEvents(!ishoved);
+	Application::Get().GetImGuiLayer()->BlockEvents(ishoved);
 	auto m_vec2RenderViewPort = ImGui::GetContentRegionAvail();
 	viewportSize = { m_vec2RenderViewPort.x,m_vec2RenderViewPort.y };
 	uint64_t textureID = intermidefbo->GetColorAttachmentRendererID();
@@ -181,6 +186,7 @@ void EditorLayer::OnEvent(Mint::Event& event)
 	if (m_SceneState == SceneState::Edit)
 	{
 		editorCam.OnEvent(event);
+		m_contentPanel.OnEvent(event);
 	}
 	EventDispatcher dispatcher(event);
 	dispatcher.Dispatch<KeyPressedEvent>(MT_BIND_EVENT_FN(EditorLayer::OnKeyPressed));

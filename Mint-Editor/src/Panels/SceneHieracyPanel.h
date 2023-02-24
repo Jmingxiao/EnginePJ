@@ -3,7 +3,7 @@
 #include "Mint/Core/Base.h"
 #include "Mint/Scene/Scene.h"
 #include "Mint/Scene/Entity.h"
-
+#include <imgui/imgui.h>
 
 MT_NAMESPACE_BEGIN
 

@@ -1,8 +1,24 @@
 #pragma once
 #include "Mint/Core/Base.h"
 #include "Mint/Util/FileSystem.h"
+#include "glm/glm.hpp"
 
 MT_NAMESPACE_BEGIN
+
+class HDR {
+public:
+	virtual ~HDR() = default;
+
+	virtual uint32_t GetWidth() const = 0;
+	virtual uint32_t GetHeight() const = 0;
+	virtual uint32_t GetRendererID() const = 0;
+
+	virtual void Bind(uint32_t slot = 0) const = 0;
+	virtual bool IsLoaded() const = 0;
+	virtual bool operator==(const HDR& other) const = 0;
+};
+
+
 
 class Texture
 {
@@ -34,7 +50,12 @@ public:
 	static Ref<Texture2D> Create(const std::string& path, uint32_t m_components);
 };
 
-
-
+class TextureHDR : public HDR
+{
+public:
+	static Ref<TextureHDR> Create(const std::string& path);
+	static Ref<TextureHDR> Create(const std::vector<std::string>& path);
+	static void SaveHdrTexture(const std::string& path, uint32_t texture_id);
+};
 
 MT_NAMESPACE_END

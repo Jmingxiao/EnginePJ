@@ -79,14 +79,13 @@ static GLenum MintFBTextureFormatToGL(FBTextureFormat format)
 	switch (format)
 	{
 	case FBTextureFormat::RGBA8:       return GL_RGBA8;
+	case FBTextureFormat::RGBA32:	   return GL_RGBA32F;
 	case FBTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
 	}
 
 	MT_ASSERT(false);
 	return 0;
 }
-
-
 
 OpenGLFramebuffer::OpenGLFramebuffer(const FBSpecification& spec)
     : m_Specification(spec)
@@ -138,6 +137,9 @@ void OpenGLFramebuffer::Invalidate()
 			{
 			case FBTextureFormat::RGBA8:
 				AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
+				break;
+			case FBTextureFormat::RGBA32:
+				AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA32F, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
 				break;
 			case FBTextureFormat::RED_INTEGER:
 				AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_R32I, GL_RED_INTEGER, m_Specification.Width, m_Specification.Height, i);

@@ -35,6 +35,37 @@ static const uint32_t gl_sampler_address[] =
 };
 
 namespace Mint {
+	
+	class OpenGLTextureHDR : public TextureHDR
+	{
+	public:
+		OpenGLTextureHDR(const std::string& path);
+		OpenGLTextureHDR(const std::vector<std::string>& path);
+		virtual ~OpenGLTextureHDR();
+
+		virtual uint32_t GetWidth() const override { return m_Width; }
+		virtual uint32_t GetHeight() const override { return m_Height; }
+		virtual uint32_t GetRendererID() const override { return m_RendererID; }
+
+		virtual void Bind(uint32_t slot = 0) const override;
+
+		virtual bool IsLoaded() const override { return m_IsLoaded; }
+
+		virtual bool operator==(const HDR& other) const override
+		{
+			return m_RendererID == other.GetRendererID();
+		}
+		static void SaveHdrTexture(const std::string& path, uint32_t texture_id);
+
+	private:
+
+		bool m_IsLoaded = false;
+		float* m_data{ nullptr };
+		std::string m_Path{};
+		uint32_t m_Width{}, m_Height{};
+		uint32_t m_RendererID{};
+		uint32_t m_format{}, m_internalformat{}, m_components{};
+	};
 
 	class OpenGLTexture2D : public Texture2D
 	{
@@ -90,11 +121,11 @@ namespace Mint {
 	private:
 
 		bool m_IsLoaded = false;
-		uint8_t* m_data;
-		std::string m_Path;
-		uint32_t m_Width, m_Height;
-		uint32_t m_RendererID;
-		uint32_t m_format, m_internalformat,m_components;
+		uint8_t* m_data{nullptr};
+		std::string m_Path{};
+		uint32_t m_Width{}, m_Height{};
+		uint32_t m_RendererID{};
+		uint32_t m_format{}, m_internalformat{}, m_components{};
 	};
 
 }

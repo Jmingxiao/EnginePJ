@@ -20,8 +20,8 @@ public:
 	static void EndScene();
 	static void Flush();
 
-	static void DrawFullscreenQuad(const Ref<Shader>& shader);
 	static void DrawModel(const glm::mat4& transform,MeshRendererComponent&src,int entityId);
+	static void DrawBackground(const std::string& = std::string());
 
 	struct Statistics
 	{
@@ -33,6 +33,7 @@ public:
 
 	static void ResetStats();
 	static Statistics GetStats();
+private:
 };
 
 MT_NAMESPACE_END

@@ -5,14 +5,13 @@
 #include <tiny_obj_loader.h>
 #include <iomanip>
 
+#include <filesystem>
+#include <imgui.h>
+#include <imgui_internal.h>
 
 MT_NAMESPACE_BEGIN
 
 
-
-Model::~Model()
-{
-}
 
 Model* Model::loadModelFromOBJ(const std::string& path)
 {
@@ -431,6 +430,71 @@ void Model::render(const Model* model, const Ref<Shader>& current_program, const
 	}
 	glBindVertexArray(0);
 }
+extern const std::filesystem::path g_AssetPath;
+
+static void DragdropTexture(const std::string& str,uint32_t compnum,Ref<Texture2D>& p_texture ) {
+	
+	ImGui::Button(str.c_str(), ImVec2(150.0f, 50.0f));
+	if (ImGui::BeginDragDropTarget())
+	{
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+		{
+			const wchar_t* path = (const wchar_t*)payload->Data;
+			std::filesystem::path texturePath = std::filesystem::path("assets") / path;
+			Ref<Texture2D> texture = Texture2D::Create(texturePath.string(), compnum);
+			if (texture->IsLoaded())
+				p_texture = texture;
+			else
+				MT_WARN("Could not load texture {0}", texturePath.filename().string());
+		}
+		ImGui::EndDragDropTarget();
+	}
+}
+
+void Model::OnImGuiRender(Model* model)
+{
+	
+	size_t i = 0;
+	for (auto& material:model->m_materials)
+	{
+		ImGuiTreeNodeFlags flags = 0 | ImGuiTreeNodeFlags_OpenOnArrow;
+		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
+		bool opened = ImGui::TreeNodeEx((void*)i, flags, material.m_name.c_str());
+		if(opened)
+		{
+			bool has_color_texture = material.m_color_texture.get();
+			bool has_metalness_texture = material.m_metalness_texture.get();
+			bool has_fresnel_texture = material.m_fresnel_texture.get();
+			bool has_shininess_texture = material.m_shininess_texture.get();
+			bool has_emission_texture = material.m_emission_texture.get();
+
+			if (has_color_texture)
+				DragdropTexture("Color texture", 4, material.m_color_texture);
+
+			if (has_metalness_texture)
+				DragdropTexture("Metalness texture", 1, material.m_metalness_texture);
+
+			if (has_fresnel_texture)
+				DragdropTexture("fresnel texture", 1, material.m_fresnel_texture);
+
+			if (has_shininess_texture)
+				DragdropTexture("Shininess texture", 1, material.m_shininess_texture);
+
+			if (has_emission_texture)
+				DragdropTexture("Emission texture", 4, material.m_emission_texture);
+
+			ImGui::ColorEdit3("Color", &material.m_color.x);
+			ImGui::SliderFloat("Metalness", &material.m_metalness, 0.0f, 1.0f);
+			ImGui::SliderFloat("Fresnel", &material.m_fresnel, 0.0f, 1.0f);
+			ImGui::SliderFloat("Shininess", &material.m_shininess, 0.0f, 5000.0f, "%.3f");
+			ImGui::ColorEdit3("Emission", &material.m_emission.x);
+
+			ImGui::TreePop();
+		}
+		i++;
+	}
+}
+
 
 MT_NAMESPACE_END
 

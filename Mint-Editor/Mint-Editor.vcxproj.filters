@@ -7,6 +7,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\EditorLayer.h" />
+    <ClInclude Include="src\Panels\ContentPenal.h">
+      <Filter>Panels</Filter>
+    </ClInclude>
     <ClInclude Include="src\Panels\SceneHieracyPanel.h">
       <Filter>Panels</Filter>
     </ClInclude>
@@ -14,6 +17,9 @@
   <ItemGroup>
     <ClCompile Include="src\EditorLayer.cpp" />
     <ClCompile Include="src\MintEditorApp.cpp" />
+    <ClCompile Include="src\Panels\ContentPenal.cpp">
+      <Filter>Panels</Filter>
+    </ClCompile>
     <ClCompile Include="src\Panels\SceneHieracyPanel.cpp">
       <Filter>Panels</Filter>
     </ClCompile>

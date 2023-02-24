@@ -80,6 +80,7 @@ private:
 	Ptr<PhysicsTimer> m_phystimer;
 
 	friend class Entity;
+	friend class SceneSerializer;
 	friend class SceneHierarchyPanel;
 };
 

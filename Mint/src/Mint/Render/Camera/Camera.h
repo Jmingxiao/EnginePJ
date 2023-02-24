@@ -86,16 +86,18 @@ namespace Mint{
 			: m_proj(projection) {}
 
 		virtual ~Camera() = default;
+		virtual const glm::vec3& GetPosition() const { return m_pos; }
+		const glm::mat4& GetViewMatrix() const { return m_view; }
 		const glm::mat4& GetProjection() const { return m_proj; }
-		const glm::mat4& GetViewProjectionMatrix() const { return std::move(m_proj * m_view); }
+		const glm::mat4& GetViewProjectionMatrix() const { return std::move(m_proj * m_view);}
 		virtual void SetViewMatrix(const glm::mat4 view) { m_view = view; }
-
 	protected:
+		glm::vec3 m_pos = { 0.0f, 5.0f, 15.0f };
 		glm::mat4 m_proj = glm::mat4(1.0f);
 		glm::mat4 m_view = glm::mat4(1.0f);
 
 	public:
-		ProjectionType type = ProjectionType::Orthographic;
+		ProjectionType type = ProjectionType::Perspective;
 	};
 
 

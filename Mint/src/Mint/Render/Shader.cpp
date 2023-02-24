@@ -46,9 +46,19 @@ namespace Mint {
             {ShaderType::VETEX_SHADER,"assets/shaders/color.vert"},
             {ShaderType::FRAGMENT_SHADER,"assets/shaders/color.frag"}
         };
-        simple = Shader::Create(simpleShaderInfo, "simple");
-        pbr    = Shader::Create(simpleShaderInfo, "pbr");
-
+        std::vector<ShaderInfo> pbrShaderInfo
+        {
+            {ShaderType::VETEX_SHADER,"assets/shaders/pbr.vert"},
+            {ShaderType::FRAGMENT_SHADER,"assets/shaders/pbr.frag"}
+        };
+        std::vector<ShaderInfo> backgroundShaderInfo
+        {
+            {ShaderType::VETEX_SHADER,"assets/shaders/background.vert"},
+            {ShaderType::FRAGMENT_SHADER,"assets/shaders/background.frag"}
+        };
+        simple      = Shader::Create(simpleShaderInfo, "simple");
+        pbr         = Shader::Create(pbrShaderInfo, "pbr");
+        background  = Shader::Create(backgroundShaderInfo, "background");
     }
 
     void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
@@ -83,6 +93,7 @@ namespace Mint {
         {
         case BuiltinShaderType::simple: return simple;
         case BuiltinShaderType::pbr: return pbr;
+        case BuiltinShaderType::background: return background;
         }
         MT_ASSERT(false, "Not A Deafult Shader Type!!!");
         return nullptr;

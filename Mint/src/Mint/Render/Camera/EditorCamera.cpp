@@ -29,7 +29,7 @@ void EditorCamera::OnUpdate(Timestep ts)
 			previousmouse = mouse;
 			firstmouse = false;
 		}
-		glm::vec2 delta = (mouse - previousmouse) * 0.03f;
+		glm::vec2 delta = (mouse - previousmouse) * 0.05f;
 		previousmouse = mouse;
 		if (Input::IsMouseButtonPressed(Mouse::Right)) {
 			MouseRotation(delta);

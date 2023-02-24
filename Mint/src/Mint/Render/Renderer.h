@@ -22,13 +22,18 @@ namespace Mint {
 
 		static void Submit(const Ref<Shader>& shader, Model* model,  bool submitmat = true, const glm::mat4& transform = glm::mat4(1.0f) );
 
+		static void DrawFullscreenQuad();
+		static void DrawBackGround(const Ref<Shader>& shader,const Ref<TextureHDR>& hdr);
+
 		static RenderAPI::API GetAPI() { return RenderAPI::GetAPI(); }
 	private:
 		struct SceneData
 		{
-			glm::mat4 ViewProjectionMatrix;
+			glm::vec3 cameraPos;
+			glm::mat4 viewProjMatrix;
+			glm::mat4 viewMatrix;
+			glm::mat4 projMatrix;
 		};
-
 		static Ptr<SceneData> s_SceneData;
 	};
 

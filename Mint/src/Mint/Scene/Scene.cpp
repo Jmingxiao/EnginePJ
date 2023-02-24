@@ -59,8 +59,16 @@ Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name)
 
 void Scene::DestroyEntity(Entity entity)
 {
-	m_registry.destroy(entity);
+	if (entity.HasComponent<RigidBodyComponent>()) {
+		auto& rb = entity.GetComponent<RigidBodyComponent>();
+		m_world->destroyRigidBody(rb.m_rigidbody);
+	}
+	if (entity.HasComponent<CollisionBodyComponent>()) {
+		auto& cb = entity.GetComponent<CollisionBodyComponent>();
+		m_world->destroyCollisionBody(cb.m_collidionbody);
+	}
 	m_entitymap.erase(entity.GetUUID());
+	m_registry.destroy(entity);
 }
 
 void Scene::OnRuntimeStart()
@@ -143,7 +151,7 @@ void Scene::OnUpdate(const Timestep& timeStep)
 	{
 		Renderer3D::BeginScene(*mainCamera, cameraTransform);
 
-		// Draw sprites
+		// Draw model;
 		{
 			auto group = m_registry.group<TransformComponent>(entt::get<MeshRendererComponent>);
 			for (auto entity : group)
@@ -197,6 +205,7 @@ void Scene::RenderScene(EditorCamera& camera)
 {
 	Renderer3D::BeginScene(camera);
 	{
+		Renderer3D::DrawBackground();
 		auto group = m_registry.group<TransformComponent>(entt::get<MeshRendererComponent>);
 		for (auto entity : group)
 		{
@@ -230,7 +239,7 @@ void Scene::OnPhysicsStart()
 
 		if (entity.HasComponent<ColliderComponent>()) {
 			auto& collider = entity.GetComponent<ColliderComponent>();
-			Gshape type = collider.m_shape;
+			Gshape type = collider.m_geometry->GetShape();
 			switch (type)
 			{
 			case Mint::Gshape::none:
@@ -265,7 +274,6 @@ void Scene::OnPhysicsStart()
 			{
 				MT_ERROR("Can not find the colliderType")
 				break;
-
 			}
 			}
 		}
@@ -283,7 +291,7 @@ void Scene::OnPhysicsStart()
 
 		if (entity.HasComponent<ColliderComponent>()) {
 			auto& collider = entity.GetComponent<ColliderComponent>();
-			Gshape type = collider.m_shape;
+			Gshape type = collider.m_geometry->GetShape();
 			switch (type)
 			{
 			case Mint::Gshape::none:

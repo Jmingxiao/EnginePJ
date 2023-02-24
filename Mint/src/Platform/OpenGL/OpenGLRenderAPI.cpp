@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "OpenGLRenderAPI.h"
+#include "OpenGLBuffer.h"
+#include "OpenGLVertexArray.h"
 #include <glad/glad.h>
 
 
@@ -61,6 +63,36 @@ void OpenGLRenderAPI::DrawLines(const Ref<VertexArray>& vertexArray, uint32_t ve
 {
 	vertexArray->Bind();
 	glDrawArrays(GL_LINES, 0, vertexCount);
+}
+
+void OpenGLRenderAPI::DrawFullScreenQuad()
+{
+	GLboolean previous_depth_state;
+	glGetBooleanv(GL_DEPTH_TEST, &previous_depth_state);
+	glDisable(GL_DEPTH_TEST);
+
+	static GLuint vertexArrayObject = 0;
+	static int nofVertices = 6;
+	if (vertexArrayObject == 0)
+	{
+		GLuint vb =0;
+		glGenVertexArrays(1, &vertexArrayObject);
+		glBindVertexArray(vertexArrayObject);
+		static const glm::vec2 positions[] = { { -1.0f, -1.0f }, { 1.0f, -1.0f }, { 1.0f, 1.0f },
+											   { -1.0f, -1.0f }, { 1.0f, 1.0f },  { -1.0f, 1.0f } };
+		glGenBuffers(1, &vb);
+		glBindBuffer(GL_ARRAY_BUFFER, vb);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, false /*normalized*/, sizeof(float) * 2 /*stride*/, 0 /*offset*/);
+	}
+	glBindVertexArray(vertexArrayObject);
+	glDrawArrays(GL_TRIANGLES, 0, nofVertices);
+
+	if (previous_depth_state)
+		glEnable(GL_DEPTH_TEST);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void OpenGLRenderAPI::SetLineWidth(float width)

@@ -35,7 +35,10 @@ public:
 	{
 		s_RenderAPI->DrawLines(vertexArray, vertexCount);
 	}
-
+	static void DrawFullscreenQuad()
+	{
+		s_RenderAPI->DrawFullScreenQuad();
+	}
 	static void SetLineWidth(float width)
 	{
 		s_RenderAPI->SetLineWidth(width);

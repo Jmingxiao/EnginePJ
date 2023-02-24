@@ -18,7 +18,7 @@ enum class CompileType
 	LINK_STATUS = 0,
 	PROGRAM_STATUS
 };
-enum class BuiltinShaderType { simple = 0, pbr, custom };
+enum class BuiltinShaderType { simple = 0, pbr, background,custom };
 
 struct ShaderInfo
 {
@@ -68,6 +68,7 @@ private:
 	std::unordered_map<std::string, Ref<Shader>> m_Shaders;
 	Ref<Shader> pbr;
 	Ref<Shader> simple;
+	Ref<Shader> background;
 };
 
 

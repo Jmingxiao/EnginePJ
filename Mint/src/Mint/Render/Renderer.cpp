@@ -22,7 +22,10 @@ void Renderer::OnWindowResize(uint32_t width, uint32_t height)
 
 void Mint::Renderer::BeginScene(Camera& camera)
 {
-	s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+	s_SceneData->viewProjMatrix = camera.GetViewProjectionMatrix();
+	s_SceneData->viewMatrix = camera.GetViewMatrix();
+	s_SceneData->projMatrix = camera.GetProjection();
+	s_SceneData->cameraPos = camera.GetPosition();
 }
 
 void Renderer::EndScene()
@@ -33,8 +36,9 @@ void Renderer::EndScene()
 void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexArray, const glm::mat4& transform)
 {
 	shader->Bind();
-	shader->SetMat4("u_viewproj", s_SceneData->ViewProjectionMatrix);
-	shader->SetMat4("u_transform", transform);
+	shader->SetMat4("projMatrix", s_SceneData->projMatrix);
+	shader->SetMat4("viewMatrix", s_SceneData->viewMatrix);
+	shader->SetMat4("modelMatrix", transform);
 
 	vertexArray->Bind();
 	RenderCommand::DrawIndexed(vertexArray);
@@ -43,10 +47,26 @@ void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& vertexA
 void Mint::Renderer::Submit(const Ref<Shader>& shader, Model* model,bool submitmat, const glm::mat4& transform)
 {
 	shader->Bind();
-	shader->SetMat4("u_viewproj", s_SceneData->ViewProjectionMatrix);
-	shader->SetMat4("u_transform", transform);
-	Model::render(model, shader, submitmat);
+	shader->SetMat4("projMatrix", s_SceneData->projMatrix);
+	shader->SetMat4("viewMatrix", s_SceneData->viewMatrix);
+	shader->SetMat4("modelMatrix", transform);
 
+	Model::render(model, shader, submitmat);
+}
+
+void Mint::Renderer::DrawBackGround(const Ref<Shader>& shader, const Ref<TextureHDR>& hdr)
+{
+	hdr->Bind(6);
+	shader->Bind();
+	shader->SetMat4("projMatrix", s_SceneData->projMatrix);
+	shader->SetMat4("inv_PV", glm::inverse(s_SceneData->projMatrix*s_SceneData->viewMatrix));
+	shader->SetFloat3("camera_pos", s_SceneData->cameraPos);
+	RenderCommand::DrawFullscreenQuad();
+}
+
+void Mint::Renderer::DrawFullscreenQuad()
+{
+	RenderCommand::DrawFullscreenQuad();
 }
 
 MT_NAMESPACE_END

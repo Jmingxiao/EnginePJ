@@ -1,6 +1,10 @@
 #pragma once
 #include"Mint/Render/Texture.h"
 #include "Mint/Render/Shader.h"
+#include "Mint/Render/Buffer.h"
+#include "Mint/Render/VertexArray.h"
+
+
 MT_NAMESPACE_BEGIN
 
 static const std::string modelPath = "assets/models/";
@@ -40,7 +44,7 @@ struct Mesh
 class Model
 {
 public:
-	~Model();
+	virtual ~Model() =default;
 	// The name of the whole model
 	std::string m_name;
 	// The filename of this model
@@ -59,12 +63,14 @@ public:
 	uint32_t m_texture_coordinates_bo;
 	// Vertex Array Object
 	uint32_t m_vaob;
+	
 
 	static Model* loadModelFromOBJ(const std::string& path);
 	static void saveModelToOBJ(Model* model, std::string filename);
 	static void saveModelMaterialsToMTL(Model* model, std::string filename);
 	static void freeModel(Model* model);
 	static void render(const Model* model, const Ref<Shader>& shader, const bool submitMaterials = true, bool ssr = false);
+	static void OnImGuiRender(Model* model);
 	static const std::string GetDefaultModelPath(DefualtModelType type)
 	{
 		return modelPath+dftModelPaths[(size_t)type];

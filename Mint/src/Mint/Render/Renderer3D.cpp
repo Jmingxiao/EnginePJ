@@ -5,7 +5,6 @@
 #include "Mint/Render/Model.h"
 #include "Mint/Render/VertexArray.h"
 #include "Mint/Render/Shader.h"
-#include "glad/glad.h"
 #include "Renderer.h"
 
 
@@ -20,6 +19,10 @@ struct LineVertex
 	// Editor-only
 	int EntityID;
 };
+struct DefaultSceneInfo {
+	float environment_multiplier = 1.0f;
+	glm::vec3 lightDir = glm::vec3(0.5f, 1.0f, 0.0f);
+};
 
 struct Renderer3DData
 {
@@ -30,7 +33,14 @@ struct Renderer3DData
 
 	ShaderLibrary m_shaderLibrary;
 	std::vector<MeshRendererComponent> meshs;
-	
+	Ref<TextureHDR> m_defautHdri;
+	Ref<TextureHDR> m_defaultIrr;
+	Ref<TextureHDR> m_defaultReflection;
+
+	float environment_multiplier = 1.0f;
+	float lightIntensity = 2.0f;
+	glm::vec3 lightDir = glm::vec3(0.5f, 1.0f, 0.0f);
+	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 	Renderer3D::Statistics Stats;
 
 	Camera m_camera;
@@ -42,6 +52,14 @@ static Renderer3DData s_Data;
 void Renderer3D::Init()
 {
 	s_Data.m_shaderLibrary.Init();
+	s_Data.m_defautHdri = TextureHDR::Create("assets/textures/hdri/default.hdr");
+	s_Data.m_defaultIrr = TextureHDR::Create("assets/textures/hdri/default_irr.hdr");
+	std::string envmap_base_name = "default_reflectmap";
+	const int roughnesses = 8;
+	std::vector<std::string> filenames;
+	for (int i = 0; i < roughnesses; i++)
+		filenames.push_back("assets/textures/hdri/" + envmap_base_name+ std::to_string(i) + ".hdr");
+	s_Data.m_defaultReflection = TextureHDR::Create(filenames);
 }
 
 void Renderer3D::Shutdown()
@@ -53,12 +71,18 @@ void Renderer3D::BeginScene(const Camera& camera, const glm::mat4& transform)
 	s_Data.m_camera = camera;
 	s_Data.m_camera.SetViewMatrix(transform);
 	Renderer::BeginScene(s_Data.m_camera);
+	s_Data.m_defautHdri->Bind(6);
+	s_Data.m_defaultIrr->Bind(7);
+	s_Data.m_defaultReflection->Bind(8);
 }
 
 void Renderer3D::BeginScene(const EditorCamera& camera)
 {
 	s_Data.m_camera = camera;
 	Renderer::BeginScene(s_Data.m_camera);
+	s_Data.m_defautHdri->Bind(6);
+	s_Data.m_defaultIrr->Bind(7);
+	s_Data.m_defaultReflection->Bind(8);
 }
 
 void Renderer3D::EndScene()
@@ -68,41 +92,45 @@ void Renderer3D::EndScene()
 
 void Renderer3D::Flush()
 {
-}
-
-void Renderer3D::DrawFullscreenQuad(const Ref<Shader>& s)
-{
-	GLboolean previous_depth_state;
-	glGetBooleanv(GL_DEPTH_TEST, &previous_depth_state);
-	glDisable(GL_DEPTH_TEST);
-
-	static Ref<VertexArray> va;
-	static Ref<VertexBuffer> vb;
-
-	if (!va.get()) {
-		static float positions[] = {  -1.0f, -1.0f , 1.0f, -1.0f ,  1.0f, 1.0f ,
-									-1.0f, -1.0f ,  1.0f, 1.0f ,   -1.0f, 1.0f  };
-		BufferLayout layout = { {DataType::Float2,"a_position"}};
-		vb = VertexBuffer::Create(positions, sizeof(positions));
-		vb->SetLayout(layout);
-		va->AddVertexBuffer(vb);
-	}
-
-	Renderer::Submit(s, va);
-	if (previous_depth_state)
-		glEnable(GL_DEPTH_TEST);
 
 }
 
 void Renderer3D::DrawModel(const glm::mat4& transform, MeshRendererComponent& src, int entityId)
 {
 	Ref<Shader> shader;
-	if (src.s_type == BuiltinShaderType::custom)
+	switch (src.s_type) {
+	case BuiltinShaderType::custom: 
+	{
 		shader = s_Data.m_shaderLibrary.Get(src.model->m_name);
-	else
+	break; 
+	}
+	case BuiltinShaderType::background:
+	case BuiltinShaderType::simple:
+	{
 		shader = s_Data.m_shaderLibrary.GetDefaultShader(src.s_type);
+		break;
+	}
+	case BuiltinShaderType::pbr:
+	{
+		shader = s_Data.m_shaderLibrary.GetDefaultShader(src.s_type);
+		shader->Bind();
+		shader->SetFloat("environment_multiplier", s_Data.environment_multiplier);
+		shader->SetFloat("lightIntensity", s_Data.lightIntensity);
+		shader->SetFloat3("lightDirection", s_Data.lightDir);
+		shader->SetFloat3("lightcolor", s_Data.lightColor);
+		break;
+	}
+	}
 	Renderer::Submit(shader, src.model, true, transform);
 	s_Data.Stats.DrawCalls += (uint32_t)src.model->m_meshes.size();
+}
+
+void Renderer3D::DrawBackground(const std::string& s)
+{
+	if (s.empty()) {
+		Renderer::DrawBackGround(
+			s_Data.m_shaderLibrary.GetDefaultShader(BuiltinShaderType::background),s_Data.m_defautHdri);
+	}
 }
 
 void Renderer3D::ResetStats()
@@ -112,7 +140,7 @@ void Renderer3D::ResetStats()
 
 Renderer3D::Statistics Renderer3D::GetStats()
 {
-	return Statistics();
+	return s_Data.Stats;
 }
 
 

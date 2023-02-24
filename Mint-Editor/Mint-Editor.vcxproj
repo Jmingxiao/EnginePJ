@@ -145,11 +145,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\EditorLayer.h" />
+    <ClInclude Include="src\Panels\ContentPenal.h" />
     <ClInclude Include="src\Panels\SceneHieracyPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorLayer.cpp" />
     <ClCompile Include="src\MintEditorApp.cpp" />
+    <ClCompile Include="src\Panels\ContentPenal.cpp" />
     <ClCompile Include="src\Panels\SceneHieracyPanel.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -110,13 +110,12 @@ namespace Mint {
 
 	struct ColliderComponent
 	{
-		Gshape m_shape{};
 		Geometry* m_geometry{};
 		rp3d::Collider* m_collider;
 		ColliderComponent() = default;
 		ColliderComponent(const ColliderComponent&) = default;
 		ColliderComponent& operator =(const ColliderComponent&) = default;
-		ColliderComponent(Geometry* g,Gshape sp) :m_shape(sp), m_geometry(g),m_collider(nullptr) {};
+		ColliderComponent(Geometry* g) : m_geometry(g),m_collider(nullptr) {};
 	};
 
 	struct MeshRendererComponent
@@ -131,6 +130,10 @@ namespace Mint {
 			model = Model::loadModelFromOBJ(p);
 			model->m_name = name;
 			s_type = type;
+		}
+		std::vector<Material> GetMaterial() 
+		{
+			return model->m_materials;
 		}
 	};
 

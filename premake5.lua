@@ -184,6 +184,7 @@ project "Mint"
             "Mint/vendor",
             "%{IncludeDir.entt}",
             "%{IncludeDir.react3d}",
+            
             --"%{IncludeDir.glm}"
         }
     
@@ -197,7 +198,6 @@ project "Mint"
             {
                 "MT_PLATFORM_WINDOWS",
 	            "_CRT_SECURE_NO_WARNINGS"
-
             } 
         filter "configurations:Debug"
             defines "MT_DEBUG"

@@ -191,11 +191,13 @@
     <ClInclude Include="src\Mint\Scene\Components.h" />
     <ClInclude Include="src\Mint\Scene\Entity.h" />
     <ClInclude Include="src\Mint\Scene\Scene.h" />
+    <ClInclude Include="src\Mint\Scene\SceneSerializer.h" />
     <ClInclude Include="src\Mint\Util\FileSystem.h" />
     <ClInclude Include="src\Mint\Util\React3dUtil.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLFrameBuffer.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLModel.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRenderer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
@@ -205,6 +207,7 @@
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="vendor\entt\entt.hpp" />
     <ClInclude Include="vendor\stb_image\stb_image.h" />
+    <ClInclude Include="vendor\stb_image\stb_image_write.h" />
     <ClInclude Include="vendor\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
@@ -236,10 +239,12 @@
     <ClCompile Include="src\Mint\Render\VertexArray.cpp" />
     <ClCompile Include="src\Mint\Scene\Entity.cpp" />
     <ClCompile Include="src\Mint\Scene\Scene.cpp" />
+    <ClCompile Include="src\Mint\Scene\SceneSerializer.cpp" />
     <ClCompile Include="src\Mint\Util\React3dUtil.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLFrameBuffer.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLModel.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRenderAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
@@ -250,6 +255,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
+    <ClCompile Include="vendor\stb_image\stb_image_write.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\imgui\ImGui.vcxproj">

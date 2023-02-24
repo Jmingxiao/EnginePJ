@@ -28,4 +28,41 @@ Ref<Texture2D> Texture2D::Create(const std::string& path, uint32_t m_components)
 	MT_ASSERT(false, "Unknown RendererAPI!");
 	return nullptr;
 }
+
+Ref<TextureHDR> TextureHDR::Create(const std::string& path)
+{
+	switch (Renderer::GetAPI())
+	{
+	case RenderAPI::API::None:    MT_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+	case RenderAPI::API::OpenGL:  return CreateRef<OpenGLTextureHDR>(path);
+	}
+
+	MT_ASSERT(false, "Unknown RendererAPI!");
+	return nullptr;
+}
+
+Ref<TextureHDR> TextureHDR::Create(const std::vector<std::string>& path)
+{
+	switch (Renderer::GetAPI())
+	{
+	case RenderAPI::API::None:    MT_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+	case RenderAPI::API::OpenGL:  return CreateRef<OpenGLTextureHDR>(path);
+	}
+
+	MT_ASSERT(false, "Unknown RendererAPI!");
+	return nullptr;
+}
+
+void TextureHDR::SaveHdrTexture(const std::string& path, uint32_t t_id)
+{
+	switch (Renderer::GetAPI())
+	{
+	case RenderAPI::API::None:    MT_ASSERT(false, "RendererAPI::None is currently not supported!"); return;
+	case RenderAPI::API::OpenGL:  OpenGLTextureHDR::SaveHdrTexture(path, t_id) ;
+	}
+
+	MT_ASSERT(false, "Unknown RendererAPI!");
+
+}
+
 MT_NAMESPACE_END

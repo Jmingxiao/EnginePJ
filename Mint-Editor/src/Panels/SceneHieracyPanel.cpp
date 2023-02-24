@@ -1,7 +1,5 @@
 #include "SceneHieracyPanel.h"
 #include "Mint/Scene/Components.h"
-
-#include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
 #include <glm/gtc/type_ptr.hpp>
@@ -49,6 +47,7 @@ void SceneHierarchyPanel::OnImGuiRender()
 	ImGui::End();
 
 	ImGui::Begin("Properties");
+
 	if (m_selectedContext)
 	{
 		DrawComponents(m_selectedContext);
@@ -86,9 +85,9 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	if (opened)
 	{
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-		bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
+		/*bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
 		if (opened)
-			ImGui::TreePop();
+			ImGui::TreePop();*/
 		ImGui::TreePop();
 	}
 
@@ -179,8 +178,7 @@ static void DrawComponent(const std::string& name, Entity entity, UIFunction uiF
 		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 		ImGui::Separator();
 		bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
-		ImGui::PopStyleVar(
-		);
+		ImGui::PopStyleVar();
 		ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
 		if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
 		{
@@ -204,6 +202,8 @@ static void DrawComponent(const std::string& name, Entity entity, UIFunction uiF
 
 		if (removeComponent)
 			entity.RemoveComponent<T>();
+		
+
 	}
 }
 
@@ -302,6 +302,22 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 
 			ImGui::Checkbox("Fixed Aspect Ratio", &component.FixedAspectRatio);
 		}
+	});
+	DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](auto& component)
+	{
+			Model::OnImGuiRender(component.model);
+	});
+	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [](auto& component)
+	{
+			
+	});
+	DrawComponent<CollisionBodyComponent>("Collision Body ", entity, [](auto& component)
+	{
+
+	});
+	DrawComponent<ColliderComponent>("Collider", entity, [](auto& component)
+	{
+
 	});
 }
 

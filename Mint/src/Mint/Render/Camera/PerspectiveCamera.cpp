@@ -13,11 +13,6 @@ PerspectiveCamera::PerspectiveCamera(float p_fov, float p_aspectRatio, float p_n
 	RecalculateViewMatrix();
 }
 
-const glm::vec3& PerspectiveCamera::GetPosition() const
-{
-	return m_pos;
-}
-
 void PerspectiveCamera::SetPosition(const glm::vec3& position)
 {
 	m_pos = position;

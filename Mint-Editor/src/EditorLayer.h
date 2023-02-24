@@ -1,6 +1,7 @@
 #pragma once
 #include<Mint.h>
 #include "Panels/SceneHieracyPanel.h"
+#include "Panels/ContentPenal.h"
 
 using namespace Mint;
 class EditorLayer : public Layer
@@ -23,6 +24,8 @@ class EditorLayer : public Layer
 
 	Entity m_BoxEntity;
 
+	Entity m_screenCam;
+
 	glm::vec2 viewportSize = { 0.0f, 0.0f };
 
 	enum class SceneState
@@ -32,7 +35,7 @@ class EditorLayer : public Layer
 	SceneState m_SceneState = SceneState::Edit;
 
 	SceneHierarchyPanel m_sceneHierarchyPanel;
-
+	ContentBrowserPanel m_contentPanel;
 public:
 	EditorLayer();
 	~EditorLayer() =default;
@@ -44,7 +47,7 @@ public:
 
 	void OnImGuiRender() override;
 
-	void OnEvent(Mint::Event& event) override;
+	void OnEvent(Event& event) override;
 
 private:
 	bool OnKeyPressed(KeyPressedEvent& e);

@@ -5,6 +5,7 @@
 #include "Mint/Events/KeyEvent.h"
 #include "Mint/Events/Event.h"
 
+
 MT_NAMESPACE_BEGIN
 
 class EditorCamera : public PerspectiveCamera {

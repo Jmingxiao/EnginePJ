@@ -95,6 +95,7 @@ void Renderer3D::Flush()
 
 }
 
+
 void Renderer3D::DrawModel(const glm::mat4& transform, MeshRendererComponent& src, int entityId)
 {
 	Ref<Shader> shader;
@@ -123,6 +124,7 @@ void Renderer3D::DrawModel(const glm::mat4& transform, MeshRendererComponent& sr
 	}
 	Renderer::Submit(shader, src.model, true, transform);
 	s_Data.Stats.DrawCalls += (uint32_t)src.model->m_meshes.size();
+	s_Data.Stats.Verticies += (uint32_t)src.model->m_positions.size();
 }
 
 void Renderer3D::DrawBackground(const std::string& s)

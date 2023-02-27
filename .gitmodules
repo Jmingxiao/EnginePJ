@@ -13,3 +13,6 @@
 [submodule "Mint/vendor/react3d"]
 	path = Mint/vendor/react3d
 	url = https://github.com/DanielChappuis/reactphysics3d
+[submodule "Mint/vendor/ImGuizmo"]
+	path = Mint/vendor/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo

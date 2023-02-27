@@ -15,6 +15,7 @@
 //scene
 #include "Mint/Scene/Entity.h"
 #include "Mint/Scene/Scene.h"
+#include "Mint/Scene/ScriptableEntity.h"
 
 //render 
 #include "Mint/Render/Renderer.h"
@@ -37,5 +38,4 @@
 #include"Mint/Audio/AudioListener.h"
 #include"Mint/Audio/SoundEffect.h"
 #include"Mint/Audio/SoundEffectLib.h"
-
 

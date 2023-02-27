@@ -32,14 +32,25 @@ namespace Mint {
 		inline static Application& Get() { return *s_instance; }
 		inline Window& GetWindow() { return *m_Window; }
 		ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
+
+		void SubmitToMainThread(const std::function<void()>& function);
 	private:
 		bool OnwindowClose( WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
+
+		void ExecuteMainThreadQueue();
+	private:
+
 		std::unique_ptr<Window> m_Window;
 		bool m_Running =true;
+		bool m_Minimized = false;
 		float m_lastFrameTime = 0.0f;
 
 		LayerStack m_LayerStack;
 		ImGuiLayer* m_ImGuiLayer;
+
+		std::vector<std::function<void()>> m_MainThreadQueue;
+		std::mutex m_MainThreadQueueMutex;
 	private:
 		static Application* s_instance;
 		

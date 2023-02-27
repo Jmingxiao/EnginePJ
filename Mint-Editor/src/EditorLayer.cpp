@@ -165,6 +165,7 @@ void EditorLayer::OnImGuiRender()
 	ImGui::Begin("Settings");
 	auto stats = Mint::Renderer3D::GetStats();
 	ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+	ImGui::Text("Vertices: %d", stats.Verticies);
 
 	ImGui::End();
 

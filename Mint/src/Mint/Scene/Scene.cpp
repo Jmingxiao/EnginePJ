@@ -2,9 +2,11 @@
 #include "Scene.h"
 #include "Components.h"
 #include "Entity.h"
-#include"Mint/Util/React3dUtil.h"
+#include "Mint/Util/React3dUtil.h"
 #include "Mint/Physics/PhysicsTimer.h"
 #include "Mint/Render/Renderer3D.h"
+#include "ScriptableEntity.h"
+#include "Mint/Scripting/ScriptEngine.h"
 
 MT_NAMESPACE_BEGIN
 
@@ -26,7 +28,6 @@ Scene::Scene()
 {
 	MT_INFO("Scene Creat");
 	m_phystimer = CreatePtr<PhysicsTimer>();
-	Renderer3D::Init();
 }
 
 Scene::~Scene()
@@ -34,9 +35,69 @@ Scene::~Scene()
 	MT_INFO("Scene Destroy");
 }
 
+template<typename... Component>
+static void CopyComponent(entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+{
+	([&]()
+		{
+			auto view = src.view<Component>();
+	for (auto srcEntity : view)
+	{
+		entt::entity dstEntity = enttMap.at(src.get<IDComponent>(srcEntity).ID);
+
+		auto& srcComponent = src.get<Component>(srcEntity);
+		dst.emplace_or_replace<Component>(dstEntity, srcComponent);
+	}
+		}(), ...);
+}
+
+template<typename... Component>
+static void CopyComponent(ComponentGroup<Component...>, entt::registry& dst, entt::registry& src, const std::unordered_map<UUID, entt::entity>& enttMap)
+{
+	CopyComponent<Component...>(dst, src, enttMap);
+}
+
+template<typename... Component>
+static void CopyComponentIfExists(Entity dst, Entity src)
+{
+	([&]()
+		{
+			if (src.HasComponent<Component>())
+			dst.AddOrReplaceComponent<Component>(src.GetComponent<Component>());
+		}(), ...);
+}
+
+template<typename... Component>
+static void CopyComponentIfExists(ComponentGroup<Component...>, Entity dst, Entity src)
+{
+	CopyComponentIfExists<Component...>(dst, src);
+}
+
 Ref<Scene> Scene::Copy(Ref<Scene> other)
 {
-	return Ref<Scene>();
+	Ref<Scene> newScene = CreateRef<Scene>();
+
+	newScene->m_width = other->m_width;
+	newScene->m_height = other->m_height;
+
+	auto& srcSceneRegistry = other->m_registry;
+	auto& dstSceneRegistry = newScene->m_registry;
+	std::unordered_map<UUID, entt::entity> enttMap;
+
+	// Create entities in new scene
+	auto idView = srcSceneRegistry.view<IDComponent>();
+	for (auto e : idView)
+	{
+		UUID uuid = srcSceneRegistry.get<IDComponent>(e).ID;
+		const auto& name = srcSceneRegistry.get<TagComponent>(e).Tag;
+		Entity newEntity = newScene->CreateEntityWithUUID(uuid, name);
+		enttMap[uuid] = (entt::entity)newEntity;
+	}
+
+	// Copy components (except IDComponent and TagComponent)
+	CopyComponent(AllComponents{}, dstSceneRegistry, srcSceneRegistry, enttMap);
+
+	return newScene;
 }
 
 Entity Scene::CreateEntity(const std::string& name)
@@ -61,11 +122,11 @@ void Scene::DestroyEntity(Entity entity)
 {
 	if (entity.HasComponent<RigidBodyComponent>()) {
 		auto& rb = entity.GetComponent<RigidBodyComponent>();
-		m_world->destroyRigidBody(rb.m_rigidbody);
+		m_physicsManager.GetWorld()->destroyRigidBody(rb.m_rigidbody);
 	}
 	if (entity.HasComponent<CollisionBodyComponent>()) {
 		auto& cb = entity.GetComponent<CollisionBodyComponent>();
-		m_world->destroyCollisionBody(cb.m_collidionbody);
+		m_physicsManager.GetWorld()->destroyCollisionBody(cb.m_collisionbody);
 	}
 	m_entitymap.erase(entity.GetUUID());
 	m_registry.destroy(entity);
@@ -76,6 +137,8 @@ void Scene::OnRuntimeStart()
 	m_IsRunning = true;
 
 	OnPhysicsStart();
+
+
 }
 void Scene::OnRuntimeStop()
 {
@@ -99,34 +162,23 @@ void Scene::OnUpdate(const Timestep& timeStep)
 	{
 		// Update scripts
 		{
-			
+
+			m_registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
+				{
+					// TODO: Move to Scene::OnScenePlay
+					if (!nsc.Instance)
+					{
+						nsc.Instance = nsc.InstantiateScript();
+						nsc.Instance->m_entity = Entity{ entity, this };
+						nsc.Instance->OnCreate();
+					}
+
+					nsc.Instance->OnUpdate(timeStep);
+				});
 		}
 
 		// Physics
-		{
-
-			m_phystimer->Update();
-			while (m_phystimer->GetEnoughtime())
-			{
-				m_world->update(m_phystimer->m_timestep);
-				m_phystimer->UpdateAccumulator();
-			}
-			auto view = m_registry.view<RigidBodyComponent>();
-			for (auto e : view)
-			{
-				Entity entity = { e, this };
-				auto& transform = entity.GetComponent<TransformComponent>();
-				auto& rb = entity.GetComponent<RigidBodyComponent>();
-
-				rp3d::Transform prevTrans = toTrans(transform);
-				rp3d::Transform currentTrans = rb.m_rigidbody->getTransform();
-				rp3d::Transform interpolatedTrans = rp3d::Transform::
-					interpolateTransforms(prevTrans, currentTrans, m_phystimer->Getfactor());
-
-				transform.Translation = toVec3(interpolatedTrans.getPosition());
-				transform.Rotation = toQuat(interpolatedTrans.getOrientation());
-			}
-		}
+		OnphysicsUpdate();
 	}
 
 	// Render 3D
@@ -169,30 +221,7 @@ void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera)
 {
 	if (!m_IsPaused || m_StepFrames-- > 0)
 	{	
-		//physics 
-		{
-			m_phystimer->Update();
-			while (m_phystimer->GetEnoughtime())
-			{
-				m_world->update(m_phystimer->m_timestep);
-				m_phystimer->UpdateAccumulator();
-			}
-			auto view = m_registry.view<RigidBodyComponent>();
-			for (auto e : view)
-			{
-				Entity entity = { e, this };
-				auto& transform = entity.GetComponent<TransformComponent>();
-				auto& rb = entity.GetComponent<RigidBodyComponent>();
-				
-				rp3d::Transform prevTrans = toTrans(transform);
-				rp3d::Transform currentTrans= rb.m_rigidbody->getTransform();
-				rp3d::Transform interpolatedTrans = rp3d::Transform::
-					interpolateTransforms(prevTrans, currentTrans,m_phystimer->Getfactor());
-				
-				transform.Translation = toVec3(interpolatedTrans.getPosition());
-				transform.Rotation = toQuat(interpolatedTrans.getOrientation());
-			}
-		}
+		OnphysicsUpdate();
 	}
 	RenderScene(camera);
 }
@@ -219,12 +248,8 @@ void Scene::RenderScene(EditorCamera& camera)
 
 void Scene::OnPhysicsStart()
 {
-	rp3d::PhysicsWorld::WorldSettings settings;
-	settings.defaultVelocitySolverNbIterations = 20;
-	settings.isSleepingEnabled = false;
-	settings.gravity = rp3d::Vector3(0.0f, -9.81f, 0.0f);
 
-	m_world = m_physicsCommon.createPhysicsWorld(settings);
+	m_physicsManager.Init();
 
 	auto rbview = m_registry.view<RigidBodyComponent>();
 	for (auto e : rbview) {
@@ -232,50 +257,13 @@ void Scene::OnPhysicsStart()
 		Entity entity = { e,this };
 		auto& transform = entity.GetComponent<TransformComponent>();
 		auto& rb = entity.GetComponent<RigidBodyComponent>();
-		auto rp3dtrans = toTrans(transform);
-
-		rb.m_rigidbody = m_world->createRigidBody(rp3dtrans);
+		
+		rb.m_rigidbody = m_physicsManager.CreateRigidBody(transform, entity);
 		rb.m_rigidbody->setType(RigidbodyTypeToRp3dBody(rb.type));
 
 		if (entity.HasComponent<ColliderComponent>()) {
 			auto& collider = entity.GetComponent<ColliderComponent>();
-			Gshape type = collider.m_geometry->GetShape();
-			switch (type)
-			{
-			case Mint::Gshape::none:
-			{
-				MT_ERROR("Wrong colliderType")
-				break;
-			}
-			case Mint::Gshape::box:
-			{
-				Box* box = (Box*)collider.m_geometry;
-				rp3d::BoxShape* cs = m_physicsCommon.createBoxShape(toVec3(boxScale(*box, transform.Scale)));
-				collider.m_collider = rb.m_rigidbody->addCollider(cs, rp3d::Transform());
-				break;
-			}
-			case Mint::Gshape::sphere:
-			{
-
-				Sphere* sp = (Sphere*)collider.m_geometry;
-				rp3d::SphereShape* cs = m_physicsCommon.createSphereShape(sphereScale(*sp, transform.Scale));
-				collider.m_collider = rb.m_rigidbody->addCollider(cs, rp3d::Transform());
-				break;
-			}
-			case Mint::Gshape::capsule:
-			{
-				Capsule* cp = (Capsule*)collider.m_geometry;
-				auto rp3dcapsule = capsuleScale(*cp, transform.Scale);
-				rp3d::CapsuleShape* cs = m_physicsCommon.createCapsuleShape(rp3dcapsule.x, rp3dcapsule.y);
-				collider.m_collider = rb.m_rigidbody->addCollider(cs, rp3d::Transform());
-				break;
-			}
-			default: 
-			{
-				MT_ERROR("Can not find the colliderType")
-				break;
-			}
-			}
+			collider.m_collider = m_physicsManager.CreateCollider(rb.m_rigidbody, collider.m_geometry, transform.Scale);
 		}
 	}
 
@@ -285,44 +273,12 @@ void Scene::OnPhysicsStart()
 		Entity entity = { e,this };
 		auto& transform = entity.GetComponent<TransformComponent>();
 		auto& cb = entity.GetComponent<CollisionBodyComponent>();
-		auto rp3dtrans = toTrans(transform);
-
-		cb.m_collidionbody = m_world->createCollisionBody(rp3dtrans);
+		
+		cb.m_collisionbody = m_physicsManager.CreateCollisionBody(transform, entity);
 
 		if (entity.HasComponent<ColliderComponent>()) {
 			auto& collider = entity.GetComponent<ColliderComponent>();
-			Gshape type = collider.m_geometry->GetShape();
-			switch (type)
-			{
-			case Mint::Gshape::none:
-				MT_ERROR("Wrong colliderType")
-				break;
-			case Mint::Gshape::box:
-			{
-				Box* box = (Box*)collider.m_geometry;
-				rp3d::BoxShape* cs = m_physicsCommon.createBoxShape(toVec3(boxScale(*box, transform.Scale)));
-				collider.m_collider = cb.m_collidionbody->addCollider(cs, rp3d::Transform());
-				break;
-			}
-			case Mint::Gshape::sphere:
-			{
-				Sphere* sp = (Sphere*)collider.m_geometry;
-				rp3d::SphereShape* cs = m_physicsCommon.createSphereShape(sphereScale(*sp, transform.Scale));
-				collider.m_collider = cb.m_collidionbody->addCollider(cs, rp3d::Transform());
-				break;
-			}
-			case Mint::Gshape::capsule:
-			{
-				Capsule* cp = (Capsule*)collider.m_geometry;
-				auto rp3dcapsule = capsuleScale(*cp, transform.Scale);
-				rp3d::CapsuleShape* cs = m_physicsCommon.createCapsuleShape(rp3dcapsule.x, rp3dcapsule.y);
-				collider.m_collider = cb.m_collidionbody->addCollider(cs, rp3d::Transform());
-				break;
-			}
-			default:
-				MT_ERROR("Can not find the colliderType")
-					break;
-			}
+			collider.m_collider = m_physicsManager.CreateCollider(cb.m_collisionbody, collider.m_geometry, transform.Scale);
 		}
 
 	}
@@ -331,8 +287,44 @@ void Scene::OnPhysicsStart()
 
 void Scene::OnPhysicsStop()
 {
-	m_physicsCommon.destroyPhysicsWorld(m_world);
-	m_world = nullptr;
+	m_physicsManager.Destroy();
+}
+
+void Scene::OnphysicsUpdate()
+{
+	m_phystimer->Update();
+	while (m_phystimer->GetEnoughtime())
+	{
+		m_physicsManager.UpdateWorld(m_phystimer->m_timestep);
+		m_phystimer->UpdateAccumulator();
+	}
+	m_physicsManager.UpdateContactedEntity();
+	m_physicsManager.UpdateTriggeredEntity();
+
+	auto view = m_registry.view<RigidBodyComponent>();
+	for (auto e : view)
+	{
+		Entity entity = { e, this };
+		auto& transform = entity.GetComponent<TransformComponent>();
+		auto& rb = entity.GetComponent<RigidBodyComponent>();
+
+		rp3d::Transform prevTrans = toTrans(transform);
+		rp3d::Transform currentTrans = rb.m_rigidbody->getTransform();
+		rp3d::Transform interpolatedTrans = rp3d::Transform::
+			interpolateTransforms(prevTrans, currentTrans, m_phystimer->Getfactor());
+
+		transform.Translation = toVec3(interpolatedTrans.getPosition());
+		transform.Rotation = toQuat(interpolatedTrans.getOrientation());
+	}
+	auto view0 = m_registry.view<CollisionBodyComponent>();
+	for (auto e : view0)
+	{
+		Entity entity = { e, this };
+		auto& transform = entity.GetComponent<TransformComponent>();
+		auto& cb = entity.GetComponent<CollisionBodyComponent>();
+
+		cb.m_collisionbody->setTransform(toTrans(transform));
+	}
 }
 
 void Scene::Step(int frames)
@@ -391,8 +383,6 @@ Entity Scene::GetMainCameraEntity()
 }
 
 
-
-
 template<typename T>
 void Scene::OnComponentAdded(Entity entity, T& component)
 {
@@ -420,7 +410,14 @@ void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& co
 	if (m_width > 0 && m_height > 0)
 		component.Camera.SetViewportSize(m_width, m_height);
 }
-
+template<>
+void Scene::OnComponentAdded<ScriptComponent>(Entity entity, ScriptComponent& component)
+{
+}
+template<>
+void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component)
+{
+}
 template<>
 void Scene::OnComponentAdded<RigidBodyComponent>(Entity entity, RigidBodyComponent& component)
 {
@@ -441,6 +438,11 @@ void Scene::OnComponentAdded<ColliderComponent>(Entity entity, ColliderComponent
 
 template<>
 void Scene::OnComponentAdded<MeshRendererComponent>(Entity entity, MeshRendererComponent& component)
+{
+
+}
+template<>
+void Scene::OnComponentAdded<MusicComponent>(Entity entity, MusicComponent& component)
 {
 
 }

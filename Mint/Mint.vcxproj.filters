@@ -34,6 +34,9 @@
     <Filter Include="src\Mint\Scene">
       <UniqueIdentifier>{91E95144-7DB7-454A-664B-B67052B821AF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Mint\Scripting">
+      <UniqueIdentifier>{760B7265-62EF-32BB-CB4F-2D0EB7521D3D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Mint\Util">
       <UniqueIdentifier>{41D5E447-AD95-607E-76D0-A9FBE24FA55A}</UniqueIdentifier>
     </Filter>
@@ -82,6 +85,9 @@
       <Filter>src\Mint\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Mint\Core\Base.h">
+      <Filter>src\Mint\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mint\Core\Buffer.h">
       <Filter>src\Mint\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Mint\Core\EntryPoint.h">
@@ -192,6 +198,18 @@
     <ClInclude Include="src\Mint\Scene\Scene.h">
       <Filter>src\Mint\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\Mint\Scene\SceneSerializer.h">
+      <Filter>src\Mint\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mint\Scene\ScriptableEntity.h">
+      <Filter>src\Mint\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mint\Scripting\ScriptEngine.h">
+      <Filter>src\Mint\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mint\Scripting\ScriptGlue.h">
+      <Filter>src\Mint\Scripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\Mint\Util\FileSystem.h">
       <Filter>src\Mint\Util</Filter>
     </ClInclude>
@@ -243,7 +261,7 @@
     <ClInclude Include="vendor\tinyobjloader\tiny_obj_loader.h">
       <Filter>vendor\tinyobjloader</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mint\Scene\SceneSerializer.h" />
+    <ClInclude Include="src\Mint\Physics\PhysicsManger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Mint\Audio\AudioListener.cpp">
@@ -330,6 +348,21 @@
     <ClCompile Include="src\Mint\Scene\Scene.cpp">
       <Filter>src\Mint\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Mint\Scene\SceneSerializer.cpp">
+      <Filter>src\Mint\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mint\Scene\ScriptableEntity.cpp">
+      <Filter>src\Mint\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mint\Scripting\ScriptEngine.cpp">
+      <Filter>src\Mint\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mint\Scripting\ScriptGlue.cpp">
+      <Filter>src\Mint\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mint\Util\FileSystem.cpp">
+      <Filter>src\Mint\Util</Filter>
+    </ClCompile>
     <ClCompile Include="src\Mint\Util\React3dUtil.cpp">
       <Filter>src\Mint\Util</Filter>
     </ClCompile>
@@ -372,6 +405,6 @@
     <ClCompile Include="vendor\stb_image\stb_image_write.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Mint\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\Mint\Physics\PhysicsManger.cpp" />
   </ItemGroup>
 </Project>

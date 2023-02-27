@@ -2,6 +2,7 @@
 #include "Application.h"
 
 #include "Log.h"
+#include "Mint/Render/Renderer.h"
 
 #include <glad/glad.h>
 #include "Input.h"
@@ -19,6 +20,8 @@ namespace Mint {
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 		
+		Renderer::Init();
+
 		m_ImGuiLayer = new ImGuiLayer();
 		PushOverlay(m_ImGuiLayer);
 
@@ -60,17 +63,21 @@ namespace Mint {
 			float time = Timestep::GetTime();
 			Timestep timestep = time - m_lastFrameTime;
 			m_lastFrameTime = time;
+			ExecuteMainThreadQueue();
 
-			for (Layer* layer : m_LayerStack) 
-				layer->OnUpdate(timestep);
-
-			m_ImGuiLayer->Begin();
+			if (!m_Minimized)
 			{
-				for (Layer* layer : m_LayerStack)
-					layer->OnImGuiRender();
+				{
+					for (Layer* layer : m_LayerStack)
+						layer->OnUpdate(timestep);
+				}
+				m_ImGuiLayer->Begin();
+				{
+					for (Layer* layer : m_LayerStack)
+						layer->OnImGuiRender();
+				}
+				m_ImGuiLayer->End();
 			}
-			m_ImGuiLayer->End();
-
 			m_Window->OnUpdate();
 		}
 	}
@@ -78,11 +85,39 @@ namespace Mint {
 		m_Running = false;
 	}
 
+	void Application::SubmitToMainThread(const std::function<void()>& function)
+	{
+		std::scoped_lock<std::mutex> lock(m_MainThreadQueueMutex);
+		m_MainThreadQueue.emplace_back(function);
+	}
+
 	bool Application::OnwindowClose(WindowCloseEvent& e)
 	{
 		m_Running = false;
 
 		return true;
+	}
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
+		if (e.GetWidth() == 0 || e.GetHeight() == 0)
+		{
+			m_Minimized = true;
+			return false;
+		}
+
+		m_Minimized = false;
+		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
+		return false;
+	}
+	void Application::ExecuteMainThreadQueue()
+	{
+		std::scoped_lock<std::mutex> lock(m_MainThreadQueueMutex);
+
+		for (auto& func : m_MainThreadQueue)
+			func();
+
+		m_MainThreadQueue.clear();
 	}
 }
 

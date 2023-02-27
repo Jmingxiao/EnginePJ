@@ -5,10 +5,13 @@
 #include "Mint/Render/Camera/SceneCamera.h"
 #include "Mint/Physics/BasicShapes.h"
 #include "Mint/Render/Model.h"
+#include "Mint/Audio/MusicBuffer.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
+
+
 
 namespace Mint {
 
@@ -85,38 +88,6 @@ namespace Mint {
 
 	};
 
-	struct RigidBodyComponent
-	{
-		enum class BodyType
-		{
-			Static = 0, Dynamic, Kinematic
-		};
-		BodyType type = BodyType::Static;
-		rp3d::RigidBody* m_rigidbody;
-		RigidBodyComponent() = default;
-		RigidBodyComponent(const RigidBodyComponent&) = default;
-		RigidBodyComponent& operator =(const RigidBodyComponent&) = default;
-		RigidBodyComponent(BodyType t):type(t){}
-	};
-
-	struct CollisionBodyComponent
-	{
-		rp3d::CollisionBody* m_collidionbody;
-		CollisionBodyComponent() = default;
-		CollisionBodyComponent(const CollisionBodyComponent&) = default;
-		CollisionBodyComponent& operator =(const CollisionBodyComponent&) = default;
-	};
-
-
-	struct ColliderComponent
-	{
-		Geometry* m_geometry{};
-		rp3d::Collider* m_collider;
-		ColliderComponent() = default;
-		ColliderComponent(const ColliderComponent&) = default;
-		ColliderComponent& operator =(const ColliderComponent&) = default;
-		ColliderComponent(Geometry* g) : m_geometry(g),m_collider(nullptr) {};
-	};
 
 	struct MeshRendererComponent
 	{	
@@ -138,8 +109,78 @@ namespace Mint {
 	};
 
 
+	struct ScriptComponent
+	{
+		std::string ClassName;
+
+		ScriptComponent() = default;
+		ScriptComponent(const ScriptComponent&) = default;
+	};
+
+	// Forward declaration
+	class ScriptableEntity;
+
+	struct NativeScriptComponent
+	{
+		ScriptableEntity* Instance = nullptr;
+
+		ScriptableEntity* (*InstantiateScript)();
+		void (*DestroyScript)(NativeScriptComponent*);
+
+		template<typename T>
+		void Bind()
+		{
+			InstantiateScript = []() { return static_cast<ScriptableEntity*>(new T()); };
+			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
+		}
+	};
+
+	struct RigidBodyComponent
+	{
+		enum class BodyType
+		{
+			Static = 0, Dynamic, Kinematic
+		};
+		BodyType type = BodyType::Static;
+		rp3d::RigidBody* m_rigidbody;
+		RigidBodyComponent() = default;
+		RigidBodyComponent(const RigidBodyComponent&) = default;
+		RigidBodyComponent& operator =(const RigidBodyComponent&) = default;
+		RigidBodyComponent(BodyType t):type(t){}
+	};
+
+	struct CollisionBodyComponent
+	{
+		rp3d::CollisionBody* m_collisionbody;
+		CollisionBodyComponent() = default;
+		CollisionBodyComponent(const CollisionBodyComponent&) = default;
+		CollisionBodyComponent& operator =(const CollisionBodyComponent&) = default;
+	};
 
 
+	struct ColliderComponent
+	{
+		Geometry* m_geometry{};
+		rp3d::Collider* m_collider;
+		ColliderComponent() = default;
+		ColliderComponent(const ColliderComponent&) = default;
+		ColliderComponent& operator =(const ColliderComponent&) = default;
+		ColliderComponent(Geometry* g) : m_geometry(g),m_collider(nullptr) {};
+	};
+
+
+
+	struct MusicComponent
+	{
+		MusicBuffer music;
+
+		MusicComponent() = default;
+		MusicComponent(const MusicComponent&) = default;
+		MusicComponent(const std::string& path):
+			music(MusicBuffer(path.c_str()))
+		{
+		}
+	};
 
 	template<typename... Component>
 	struct ComponentGroup
@@ -147,7 +188,8 @@ namespace Mint {
 	};
 
 	using AllComponents =
-		ComponentGroup<TransformComponent, MeshRendererComponent, CameraComponent, 
-		RigidBodyComponent, CollisionBodyComponent,ColliderComponent >;
+		ComponentGroup<TransformComponent, MeshRendererComponent, ScriptComponent,
+		NativeScriptComponent, CameraComponent,RigidBodyComponent, 
+		CollisionBodyComponent,ColliderComponent,MusicComponent >;
 
 }

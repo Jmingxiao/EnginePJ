@@ -20,6 +20,7 @@ public:
 
 	void SetGain(const float& val);
 
+	
 	MusicBuffer(const char* filename);
 	~MusicBuffer();
 private:
@@ -31,7 +32,6 @@ private:
 	SF_INFO p_Sfinfo;
 	short* p_Membuf;
 	ALenum p_Format;
-	MusicBuffer() = delete;
 };
 
 MT_NAMESPACE_END

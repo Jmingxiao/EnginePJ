@@ -76,8 +76,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>MT_PLATFORM_WINDOWS;MT_BUILD_DLL;GLFW_INCLUDE_NONE;MT_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MT_PLATFORM_WINDOWS;MT_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;vendor\mono\include;vendor\filewatch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -91,7 +91,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\Debug\libmono-static-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -99,8 +99,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>MT_PLATFORM_WINDOWS;MT_BUILD_DLL;GLFW_INCLUDE_NONE;MT_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MT_PLATFORM_WINDOWS;MT_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;vendor\mono\include;vendor\filewatch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -117,7 +117,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\Release\libmono-static-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -125,8 +125,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>MT_PLATFORM_WINDOWS;MT_BUILD_DLL;GLFW_INCLUDE_NONE;MT_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MT_PLATFORM_WINDOWS;MT_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;vendor\mono\include;vendor\filewatch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -143,7 +143,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;vendor\mono\lib\Dist\libmono-static-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -155,6 +155,7 @@
     <ClInclude Include="src\Mint\Audio\SoundEffectLib.h" />
     <ClInclude Include="src\Mint\Core\Application.h" />
     <ClInclude Include="src\Mint\Core\Base.h" />
+    <ClInclude Include="src\Mint\Core\Buffer.h" />
     <ClInclude Include="src\Mint\Core\EntryPoint.h" />
     <ClInclude Include="src\Mint\Core\Input.h" />
     <ClInclude Include="src\Mint\Core\KeyCodes.h" />
@@ -172,6 +173,7 @@
     <ClInclude Include="src\Mint\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Mint\Math\AxisAligned.h" />
     <ClInclude Include="src\Mint\Physics\BasicShapes.h" />
+    <ClInclude Include="src\Mint\Physics\PhysicsManger.h" />
     <ClInclude Include="src\Mint\Physics\PhysicsTimer.h" />
     <ClInclude Include="src\Mint\Render\Buffer.h" />
     <ClInclude Include="src\Mint\Render\Camera\Camera.h" />
@@ -192,6 +194,9 @@
     <ClInclude Include="src\Mint\Scene\Entity.h" />
     <ClInclude Include="src\Mint\Scene\Scene.h" />
     <ClInclude Include="src\Mint\Scene\SceneSerializer.h" />
+    <ClInclude Include="src\Mint\Scene\ScriptableEntity.h" />
+    <ClInclude Include="src\Mint\Scripting\ScriptEngine.h" />
+    <ClInclude Include="src\Mint\Scripting\ScriptGlue.h" />
     <ClInclude Include="src\Mint\Util\FileSystem.h" />
     <ClInclude Include="src\Mint\Util\React3dUtil.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
@@ -224,6 +229,7 @@
     <ClCompile Include="src\Mint\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Mint\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Mint\Math\AxisAligned.cpp" />
+    <ClCompile Include="src\Mint\Physics\PhysicsManger.cpp" />
     <ClCompile Include="src\Mint\Render\Buffer.cpp" />
     <ClCompile Include="src\Mint\Render\Camera\EditorCamera.cpp" />
     <ClCompile Include="src\Mint\Render\Camera\PerspectiveCamera.cpp" />
@@ -240,6 +246,10 @@
     <ClCompile Include="src\Mint\Scene\Entity.cpp" />
     <ClCompile Include="src\Mint\Scene\Scene.cpp" />
     <ClCompile Include="src\Mint\Scene\SceneSerializer.cpp" />
+    <ClCompile Include="src\Mint\Scene\ScriptableEntity.cpp" />
+    <ClCompile Include="src\Mint\Scripting\ScriptEngine.cpp" />
+    <ClCompile Include="src\Mint\Scripting\ScriptGlue.cpp" />
+    <ClCompile Include="src\Mint\Util\FileSystem.cpp" />
     <ClCompile Include="src\Mint\Util\React3dUtil.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />

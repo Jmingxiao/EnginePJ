@@ -1,10 +1,10 @@
 #pragma once
+
 #include "Mint/Core/TimeStep.h"
 #include "Mint/Core/UUID.h"
 #include "Mint/Render/Camera/EditorCamera.h"
 #include "Components.h"
 #include "entt.hpp"
-
 
 
 MT_NAMESPACE_BEGIN
@@ -62,6 +62,7 @@ private:
 
 	void OnPhysicsStart();
 	void OnPhysicsStop();
+	void OnphysicsUpdate();
 	void RenderScene(EditorCamera& camera);
 
 private:
@@ -73,11 +74,9 @@ private:
 	entt::registry m_registry;
 	std::unordered_map<UUID, entt::entity> m_entitymap;
 
-
-
-	rp3d::PhysicsCommon m_physicsCommon;
-	rp3d::PhysicsWorld* m_world;
 	Ptr<PhysicsTimer> m_phystimer;
+
+	PhysicsManager m_physicsManager;
 
 	friend class Entity;
 	friend class SceneSerializer;

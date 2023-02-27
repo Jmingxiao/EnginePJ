@@ -265,6 +265,46 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 	{
 		for (auto entity : entities)
 		{
+			uint64_t uuid = entity["Entity"].as<uint64_t>();
+
+			std::string name;
+			auto tagComponent = entity["TagComponent"];
+			if (tagComponent)
+				name = tagComponent["Tag"].as<std::string>();
+
+			MT_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
+
+			Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
+
+			auto transformComponent = entity["TransformComponent"];
+			if (transformComponent)
+			{
+				// Entities always have transforms
+				auto& tc = deserializedEntity.GetComponent<TransformComponent>();
+				tc.Translation = transformComponent["Translation"].as<glm::vec3>();
+				tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
+				tc.Scale = transformComponent["Scale"].as<glm::vec3>();
+			}
+
+			auto cameraComponent = entity["CameraComponent"];
+			if (cameraComponent)
+			{
+				auto& cc = deserializedEntity.AddComponent<CameraComponent>();
+
+				auto& cameraProps = cameraComponent["Camera"];
+				cc.Camera.SetProjectionType((ProjectionType)cameraProps["ProjectionType"].as<int>());
+
+				cc.Camera.SetPerspectiveVerticalFOV(cameraProps["PerspectiveFOV"].as<float>());
+				cc.Camera.SetPerspectiveNearClip(cameraProps["PerspectiveNear"].as<float>());
+				cc.Camera.SetPerspectiveFarClip(cameraProps["PerspectiveFar"].as<float>());
+
+				cc.Camera.SetOrthographicSize(cameraProps["OrthographicSize"].as<float>());
+				cc.Camera.SetOrthographicNearClip(cameraProps["OrthographicNear"].as<float>());
+				cc.Camera.SetOrthographicFarClip(cameraProps["OrthographicFar"].as<float>());
+
+				cc.Primary = cameraComponent["Primary"].as<bool>();
+				cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
+			}
 
 		}
 	}

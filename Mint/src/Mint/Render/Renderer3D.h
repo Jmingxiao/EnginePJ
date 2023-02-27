@@ -27,8 +27,6 @@ public:
 	{
 		uint32_t DrawCalls = 0;
 		uint32_t Verticies = 0;
-
-		uint32_t GetTotalVertexCount() const { return Verticies; }
 	};
 
 	static void ResetStats();

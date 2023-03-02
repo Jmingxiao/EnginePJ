@@ -136,11 +136,15 @@ void OpenGLFramebuffer::Invalidate()
 			switch (m_ColorAttachmentSpecifications[i].TextureFormat)
 			{
 			case FBTextureFormat::RGBA8:
+			{
 				AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA8, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
 				break;
+			}
 			case FBTextureFormat::RGBA32:
+			{
 				AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_RGBA32F, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
 				break;
+			}
 			case FBTextureFormat::RED_INTEGER:
 				AttachColorTexture(m_ColorAttachments[i], m_Specification.Samples, GL_R32I, GL_RED_INTEGER, m_Specification.Width, m_Specification.Height, i);
 				break;
@@ -193,6 +197,8 @@ void OpenGLFramebuffer::Blit(const Ref<Framebuffer>& other)
 {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, other->GetID());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_RendererID);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0);
 	glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, 
 		m_Specification.Width, m_Specification.Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
@@ -220,9 +226,20 @@ int OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y)
 	return pixelData;
 }
 
+void OpenGLFramebuffer::BindColorTexture(uint32_t slot,uint32_t index)
+{
+	MT_ASSERT(index < m_ColorAttachments.size());
+	glBindTextureUnit(slot, m_ColorAttachments[index]);
+}
+
+void OpenGLFramebuffer::BindDepthTexture(uint32_t slot)
+{
+	glBindTextureUnit(slot, m_DepthAttachment);
+}
+
 void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
 {
-	MT_ASSERT(attachmentIndex < m_ColorAttachments.size());
+	MT_ASSERT(attachmentIndex < m_ColorAttachments.size());	
 
 	auto& spec = m_ColorAttachmentSpecifications[attachmentIndex];
 	glClearTexImage(m_ColorAttachments[attachmentIndex], 0,

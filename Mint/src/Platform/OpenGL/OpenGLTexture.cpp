@@ -140,10 +140,10 @@ namespace Mint {
         glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
 
-    OpenGLTexture2D::OpenGLTexture2D(const std::string& path, uint32_t n_component)
+    OpenGLTexture2D::OpenGLTexture2D(const std::string& path, int n_component)
         : m_Path(path), m_components(n_component)
     {
-        int width, height, channels;
+        int width{}, height{}, channels{};
         stbi_set_flip_vertically_on_load(1);
         stbi_uc* data = nullptr;
         {
@@ -155,8 +155,9 @@ namespace Mint {
             m_data = data;
             m_Width = width;
             m_Height = height;
-
-            Setfomat(n_component);
+            
+            channels = n_component == -1 ? channels : n_component;
+            Setfomat(channels);
             MT_ASSERT(m_format & m_internalformat, "Format not supported!");
 
 

@@ -76,8 +76,7 @@ void MusicBuffer::UpdateBufferStream()
 		if (slen > 0)
 		{
 			slen *= p_Sfinfo.channels * (sf_count_t)sizeof(short);
-			alBufferData(bufid, p_Format, p_Membuf, (ALsizei)slen,
-				p_Sfinfo.samplerate);
+			alBufferData(bufid, p_Format, p_Membuf, (ALsizei)slen, p_Sfinfo.samplerate);
 			alSourceQueueBuffers(p_Source, 1, &bufid);
 		}
 		if (alGetError() != AL_NO_ERROR)
@@ -126,6 +125,7 @@ void MusicBuffer::SetGain(const float& val)
 
 MusicBuffer::MusicBuffer(const char* filename)
 {
+	MT_TRACE("music created");
 	AudioListener::Init();
 	alGenSources(1, &p_Source);
 	alGenBuffers(NUM_BUFFERS, p_Buffers);
@@ -172,6 +172,7 @@ MusicBuffer::~MusicBuffer()
 	p_SndFile = nullptr;
 	free(p_Membuf);
 	alDeleteBuffers(NUM_BUFFERS, p_Buffers);
+	MT_TRACE("music destroyed");
 }
 
 MT_NAMESPACE_END

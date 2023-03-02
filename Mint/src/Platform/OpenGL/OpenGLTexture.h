@@ -71,7 +71,7 @@ namespace Mint {
 	{
 	public:
 		OpenGLTexture2D(uint32_t width, uint32_t height, uint32_t m_components);
-		OpenGLTexture2D(const std::string& path, uint32_t m_components);
+		OpenGLTexture2D(const std::string& path, int m_components =-1);
 		virtual ~OpenGLTexture2D();
 
 		virtual uint32_t GetWidth() const override { return m_Width; }

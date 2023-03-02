@@ -5,6 +5,7 @@
 #include "Mint/Render/Camera/EditorCamera.h"
 #include "Components.h"
 #include "entt.hpp"
+#include "Mint/Physics/PhysicsManger.h"
 
 
 MT_NAMESPACE_BEGIN
@@ -62,7 +63,11 @@ private:
 
 	void OnPhysicsStart();
 	void OnPhysicsStop();
-	void OnphysicsUpdate();
+	void OnPhysicsUpdate();
+
+	void OnAudioStart();
+	void OnAudioStop();
+	void OnAudioUpdate();
 	void RenderScene(EditorCamera& camera);
 
 private:

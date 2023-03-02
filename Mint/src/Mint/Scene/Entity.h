@@ -22,7 +22,7 @@ namespace Mint {
 			MT_ASSERT(!HasComponent<T>(), "Entity already has component!");
 			T& component = m_scene->m_registry.emplace<T>(m_entity, std::forward<Args>(args)...);
 			m_scene->OnComponentAdded<T>(*this, component);
-			return component;;
+			return component;
 		}
 
 		template<typename T, typename... Args>
@@ -62,9 +62,6 @@ namespace Mint {
 
 		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
 		const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
-
-		virtual void OnContact(Entity other, OnCollisionType type){}
-		virtual void OnTrigger(Entity other, OnCollisionType type){ }
 
 	private:
 		entt::entity m_entity{ entt::null };

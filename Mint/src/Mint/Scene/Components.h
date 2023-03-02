@@ -6,6 +6,8 @@
 #include "Mint/Physics/BasicShapes.h"
 #include "Mint/Render/Model.h"
 #include "Mint/Audio/MusicBuffer.h"
+#include "Mint/Audio/SoundEffectLib.h"
+#include "Mint/Audio/SoundEffect.h"
 
 #include "glm/gtc/matrix_transform.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
@@ -91,13 +93,15 @@ namespace Mint {
 
 	struct MeshRendererComponent
 	{	
+		Model* model;
+		std::string m_path;
 		BuiltinShaderType s_type;
 
-		Model* model;
 		MeshRendererComponent() = default;
 		MeshRendererComponent(const MeshRendererComponent&) = default;
 		MeshRendererComponent( const std::string&p, const std::string name, BuiltinShaderType type= BuiltinShaderType::simple)
 		{
+			m_path = p;
 			model = Model::loadModelFromOBJ(p);
 			model->m_name = name;
 			s_type = type;
@@ -146,7 +150,7 @@ namespace Mint {
 		RigidBodyComponent() = default;
 		RigidBodyComponent(const RigidBodyComponent&) = default;
 		RigidBodyComponent& operator =(const RigidBodyComponent&) = default;
-		RigidBodyComponent(BodyType t):type(t){}
+		RigidBodyComponent(BodyType t):type(t),m_rigidbody(nullptr){}
 	};
 
 	struct CollisionBodyComponent
@@ -156,8 +160,6 @@ namespace Mint {
 		CollisionBodyComponent(const CollisionBodyComponent&) = default;
 		CollisionBodyComponent& operator =(const CollisionBodyComponent&) = default;
 	};
-
-
 	struct ColliderComponent
 	{
 		Geometry* m_geometry{};
@@ -167,18 +169,29 @@ namespace Mint {
 		ColliderComponent& operator =(const ColliderComponent&) = default;
 		ColliderComponent(Geometry* g) : m_geometry(g),m_collider(nullptr) {};
 	};
-
-
-
 	struct MusicComponent
 	{
-		MusicBuffer music;
-
+		Ref<MusicBuffer> music;
+		std::string m_path;
 		MusicComponent() = default;
 		MusicComponent(const MusicComponent&) = default;
 		MusicComponent(const std::string& path):
-			music(MusicBuffer(path.c_str()))
+			m_path(path)
 		{
+			music = CreateRef<MusicBuffer>(path.c_str());
+		}
+	};
+	struct SoundComponent
+	{
+		int sound;
+		std::string m_path;
+		SoundEffect soundplayer;
+		SoundComponent() = default;
+		SoundComponent(const SoundComponent&) = default;
+		SoundComponent(const std::string& path) :
+			m_path(path)
+		{
+			sound = SoundEffectsLibrary::Get()->Load(path.c_str());
 		}
 	};
 

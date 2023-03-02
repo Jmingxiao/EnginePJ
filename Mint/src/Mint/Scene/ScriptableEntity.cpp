@@ -12,3 +12,11 @@ void Mint::ScriptableEntity::OnDestroy()
 void Mint::ScriptableEntity::OnUpdate(Timestep ts)
 {
 }
+
+void Mint::ScriptableEntity::OnContact(Entity other, OnCollisionType type)
+{
+}
+
+void Mint::ScriptableEntity::OnTrigger(Entity other, OnCollisionType type)
+{
+}

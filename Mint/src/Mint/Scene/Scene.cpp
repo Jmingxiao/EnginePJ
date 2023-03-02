@@ -138,6 +138,17 @@ void Scene::OnRuntimeStart()
 
 	OnPhysicsStart();
 
+	// createScript
+	m_registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
+	{
+		// TODO: Move to Scene::OnScenePlay
+		if (!nsc.Instance)
+		{
+			nsc.Instance = nsc.InstantiateScript();
+			nsc.Instance->m_entity = Entity{ entity, this };
+			nsc.Instance->OnCreate();
+		}
+	});
 
 }
 void Scene::OnRuntimeStop()
@@ -149,11 +160,13 @@ void Scene::OnRuntimeStop()
 void Scene::OnSimulationStart()
 {
 	OnPhysicsStart();
+	OnAudioStart();
 }
 
 void Scene::OnSimulationStop()
 {
 	OnPhysicsStop();
+	OnAudioStop();
 }
 
 void Scene::OnUpdate(const Timestep& timeStep)
@@ -162,23 +175,20 @@ void Scene::OnUpdate(const Timestep& timeStep)
 	{
 		// Update scripts
 		{
-
 			m_registry.view<NativeScriptComponent>().each([=](auto entity, auto& nsc)
 				{
-					// TODO: Move to Scene::OnScenePlay
 					if (!nsc.Instance)
 					{
 						nsc.Instance = nsc.InstantiateScript();
 						nsc.Instance->m_entity = Entity{ entity, this };
 						nsc.Instance->OnCreate();
 					}
-
 					nsc.Instance->OnUpdate(timeStep);
 				});
 		}
 
 		// Physics
-		OnphysicsUpdate();
+		OnPhysicsUpdate();
 	}
 
 	// Render 3D
@@ -221,7 +231,8 @@ void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera)
 {
 	if (!m_IsPaused || m_StepFrames-- > 0)
 	{	
-		OnphysicsUpdate();
+		OnPhysicsUpdate();
+		OnAudioUpdate();
 	}
 	RenderScene(camera);
 }
@@ -290,7 +301,7 @@ void Scene::OnPhysicsStop()
 	m_physicsManager.Destroy();
 }
 
-void Scene::OnphysicsUpdate()
+void Scene::OnPhysicsUpdate()
 {
 	m_phystimer->Update();
 	while (m_phystimer->GetEnoughtime())
@@ -315,6 +326,7 @@ void Scene::OnphysicsUpdate()
 
 		transform.Translation = toVec3(interpolatedTrans.getPosition());
 		transform.Rotation = toQuat(interpolatedTrans.getOrientation());
+		rb.m_rigidbody->setType(RigidbodyTypeToRp3dBody(rb.type));
 	}
 	auto view0 = m_registry.view<CollisionBodyComponent>();
 	for (auto e : view0)
@@ -324,6 +336,40 @@ void Scene::OnphysicsUpdate()
 		auto& cb = entity.GetComponent<CollisionBodyComponent>();
 
 		cb.m_collisionbody->setTransform(toTrans(transform));
+	}
+}
+
+void Scene::OnAudioStart()
+{
+	auto view0 = m_registry.view<MusicComponent>();
+	for (auto e : view0)
+	{
+		Entity entity = { e, this };
+		auto& music = entity.GetComponent<MusicComponent>();
+		music.music = CreateRef<MusicBuffer>(music.m_path.c_str());
+		music.music->Play();
+	}
+}
+
+void Scene::OnAudioStop()
+{
+	auto view0 = m_registry.view<MusicComponent>();
+	for (auto e : view0)
+	{
+		Entity entity = { e, this };
+		auto& music = entity.GetComponent<MusicComponent>();
+		music.music->Stop();
+	}
+}
+
+void Scene::OnAudioUpdate()
+{
+	auto view0 = m_registry.view<MusicComponent>();
+	for (auto e : view0)
+	{
+		Entity entity = { e, this };
+		auto& music = entity.GetComponent<MusicComponent>();
+		music.music->UpdateBufferStream();
 	}
 }
 
@@ -348,6 +394,10 @@ void Scene::OnViewportResize(uint32_t width, uint32_t height)
 		if (!cameraComponent.FixedAspectRatio)
 			cameraComponent.Camera.SetViewportSize(width, height);
 	}
+}
+
+void Scene::DuplicateEntity(Entity entity)
+{
 }
 
 Entity Scene::FindEntityByName(std::string_view name)
@@ -381,6 +431,8 @@ Entity Scene::GetMainCameraEntity()
 	}
 	return {};
 }
+
+
 
 
 template<typename T>

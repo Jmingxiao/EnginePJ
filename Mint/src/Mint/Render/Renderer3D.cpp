@@ -37,7 +37,7 @@ struct Renderer3DData
 	Ref<TextureHDR> m_defaultIrr;
 	Ref<TextureHDR> m_defaultReflection;
 
-	float environment_multiplier = 1.0f;
+	float environment_multiplier = 0.0f;
 	float lightIntensity = 2.0f;
 	glm::vec3 lightDir = glm::vec3(0.5f, 1.0f, 0.0f);
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -103,12 +103,14 @@ void Renderer3D::DrawModel(const glm::mat4& transform, MeshRendererComponent& sr
 	case BuiltinShaderType::custom: 
 	{
 		shader = s_Data.m_shaderLibrary.Get(src.model->m_name);
+		shader->Bind();
 	break; 
 	}
 	case BuiltinShaderType::background:
 	case BuiltinShaderType::simple:
 	{
 		shader = s_Data.m_shaderLibrary.GetDefaultShader(src.s_type);
+		shader->Bind();
 		break;
 	}
 	case BuiltinShaderType::pbr:
@@ -122,6 +124,7 @@ void Renderer3D::DrawModel(const glm::mat4& transform, MeshRendererComponent& sr
 		break;
 	}
 	}
+	shader->SetInt("entity_id", entityId);
 	Renderer::Submit(shader, src.model, true, transform);
 	s_Data.Stats.DrawCalls += (uint32_t)src.model->m_meshes.size();
 	s_Data.Stats.Verticies += (uint32_t)src.model->m_positions.size();

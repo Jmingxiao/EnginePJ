@@ -20,10 +20,12 @@ namespace Mint{
 		virtual void OnCreate();
 		virtual void OnDestroy();
 		virtual void OnUpdate(Timestep ts);
-
+		virtual void OnContact(Entity other, OnCollisionType type);
+		virtual void OnTrigger(Entity other, OnCollisionType type);
 	private:
 		Entity m_entity;
 	private:
 		friend class Scene;
+		friend class PhysicsManager;
 	};
 }

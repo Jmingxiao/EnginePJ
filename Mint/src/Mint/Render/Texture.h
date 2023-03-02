@@ -47,7 +47,7 @@ class Texture2D : public Texture
 {
 public:
 	static Ref<Texture2D> Create(uint32_t width, uint32_t height, uint32_t m_components);
-	static Ref<Texture2D> Create(const std::string& path, uint32_t m_components);
+	static Ref<Texture2D> Create(const std::string& path, int m_components = -1);
 };
 
 class TextureHDR : public HDR

@@ -26,6 +26,7 @@ project "Mint-Editor"
             "%{wks.location}/Mint/vendor",
             "%{IncludeDir.entt}",
             "%{IncludeDir.react3d}",
+            "%{IncludeDir.ImGuizmo}",
             --"%{IncludeDir.glm}"
         }
     

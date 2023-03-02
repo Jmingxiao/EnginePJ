@@ -41,7 +41,7 @@ struct FBSpecification
 {
 	uint32_t Width = 0, Height = 0;
 	FBAttachment Attachments;
-	uint32_t Samples = 1;
+	uint32_t Samples =1;
 
 	bool SwapChainTarget = false;
 };
@@ -61,6 +61,9 @@ public:
 	virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
 
 	virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
+
+	virtual void BindColorTexture(uint32_t slot =0,uint32_t index =0) =0;
+	virtual void BindDepthTexture(uint32_t slot = 0) = 0;
 
 	virtual const FBSpecification& GetSpecification() const = 0;
 	virtual const uint32_t GetID() = 0;

@@ -1,5 +1,6 @@
 #pragma once
 #include "Mint/Scene/Components.h"
+#include "Mint/Physics/PhysicsManger.h"
 
 namespace Mint {
 

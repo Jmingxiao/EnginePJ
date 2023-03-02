@@ -37,7 +37,7 @@ uniform float environment_multiplier;
 uniform vec3 lightcolor;
 uniform vec3 lightDirection;
 uniform float lightIntensity;
-
+uniform int entity_id;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Input varyings from vertex shader
@@ -50,7 +50,10 @@ in mat4 viewInverse;
 ///////////////////////////////////////////////////////////////////////////////
 // Output color
 ///////////////////////////////////////////////////////////////////////////////
+
+
 layout(location = 0) out vec4 fragmentColor;
+layout(location = 1) out int entid;
 
 float roughness;
 float ss =0.0;
@@ -74,15 +77,16 @@ vec3 calculateDirectIllumiunation(vec3 viewDir, vec3 normalvs, vec3 base_color)
 	// Task 1.3 - Calculate the diffuse term and return that as the result
 	// instead of lambertian diffuse I chose disney diffuse
 	// Disney diffuse:https://media.disneyanimation.com/uploads/production/publication_asset/48/asset/s2012_pbs_disney_brdf_notes_v3.pdf
+	// git hub£º https://github.com/wdas/brdf/blob/main/src/brdfs/disney.brdf
 	///////////////////////////////////////////////////////////////////////////
 
 	vec3 lightcolor = lightIntensity*lightcolor;
 
 	float Fd90 = 0.5 + 2.0*roughness*lh*lh;
-    float fdlight = (1.0+(Fd90-1.0)*pow(1.0-nl,5.0));
-    float fdview = (1.0+(Fd90-1.0)*pow(1.0-nv,5.0));
-    float fd = fdlight*fdview;
-	vec3 basediffuse =	base_color/PI*fd*nl*lightcolor;
+    float fdlight = pow(1.0-nl,5.0);
+    float fdview = pow(1.0-nv,5.0);
+    float fd = mix(1.0, Fd90, fdlight) * mix(1.0, Fd90, fdview);
+	vec3 basediffuse =	base_color/PI*nl*lightcolor*fd;
 	
 	//subsurface diffuse disney 2015 bidirectional subsurface scattering
 	vec3 ssdiffuse;
@@ -131,7 +135,7 @@ vec3 calculateDirectIllumiunation(vec3 viewDir, vec3 normalvs, vec3 base_color)
 
 	float brdf = D*G*F/(4*nl*nv);
 
-	vec3 dielectric = nl*brdf*lightcolor + (1-material_metalness)*dielectricdiff;
+	vec3 dielectric = nl*brdf*lightcolor +(1-material_metalness)*dielectricdiff;
 	vec3 matelic =  material_metalness*base_color*nl*lightcolor*brdf;
 	direct_illum = matelic+dielectric;
 	
@@ -172,7 +176,7 @@ vec3 calculateIndirectIllumination(vec3 viewDirVS, vec3 n, vec3 base_color)
 			phi = phi + 2.0f * PI;
 		}
 		vec2 normalsph = vec2(phi / (2.0 * PI), 1 - theta / PI);
-		irradiance = texture2D(irradianceMap,normalsph).rpg;
+		irradiance = texture2D(irradianceMap,normalsph).rgb;
 	}
 	vec3 diffuse = irradiance*base_color/PI;
 
@@ -250,7 +254,8 @@ void main()
 		emission_term *= texture(emissiveMap, texCoord).rgb;
 	}
 
-	fragmentColor.rgb = direct_illumination_term + indirect_illumination_term + emission_term;
+	fragmentColor.rgb = direct_illumination_term+ indirect_illumination_term + emission_term;
 	fragmentColor.a =1.0f;
 
+	entid = entity_id;
 }

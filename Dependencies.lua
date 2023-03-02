@@ -10,6 +10,9 @@ IncludeDir["react3d"]   = "%{wks.location}/Mint/vendor/react3d/include"
 IncludeDir["entt"]      = "%{wks.location}/Mint/vendor/entt"
 IncludeDir["mono"]      = "%{wks.location}/Mint/vendor/mono/include"
 IncludeDir["filewatch"] = "%{wks.location}/Mint/vendor/filewatch"
+IncludeDir["ImGuizmo"] = "%{wks.location}/Mint/vendor/ImGuizmo"
+IncludeDir["yaml_cpp"] = "%{wks.location}/Mint/vendor/yaml-cpp/include"
+
 
 
 LibraryDir = {}

@@ -305,11 +305,27 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 	});
 	DrawComponent<MeshRendererComponent>("Mesh Renderer", entity, [](auto& component)
 	{
-			Model::OnImGuiRender(component.model);
+		Model::OnImGuiRender(component.model);
 	});
 	DrawComponent<RigidBodyComponent>("Rigid Body", entity, [](auto& component)
 	{
-			
+		std::vector<std::string> items = { "Static", "Dynamic","Kinematic"};
+		std::string current_item = items[(int)component.type];
+		ImGuiComboFlags flags = ImGuiComboFlags_NoArrowButton;
+		if (ImGui::BeginCombo("##custom combo", current_item.c_str(), flags))
+		{
+			for (int n = 0; n < items.size(); n++)
+			{
+				bool is_selected = (current_item == items[n]);
+				if (ImGui::Selectable(items[n].c_str(), is_selected)) {
+					component.type = (RigidBodyComponent::BodyType)n;
+				}
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+
 	});
 	DrawComponent<CollisionBodyComponent>("Collision Body ", entity, [](auto& component)
 	{
@@ -317,7 +333,10 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 	});
 	DrawComponent<ColliderComponent>("Collider", entity, [](auto& component)
 	{
+		bool show;
+		if (ImGui::Checkbox("Show Collider Gizmos",&show)) {
 
+		}
 	});
 }
 

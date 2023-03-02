@@ -87,6 +87,34 @@ namespace YAML {
 	};
 
 	template<>
+	struct convert<glm::quat>
+	{
+		static Node encode(const glm::quat& rhs)
+		{
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.push_back(rhs.z);
+			node.push_back(rhs.w);
+			node.SetStyle(EmitterStyle::Flow);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::quat& rhs)
+		{
+			if (!node.IsSequence() || node.size() != 4)
+				return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			rhs.z = node[2].as<float>();
+			rhs.w = node[3].as<float>();
+			return true;
+		}
+	};
+
+
+	template<>
 	struct convert<Mint::UUID>
 	{
 		static Node encode(const Mint::UUID& uuid)
@@ -211,6 +239,86 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity) {
 
 		out << YAML::EndMap; // CameraComponent
 	}
+
+	//MeshComponent
+	if (entity.HasComponent<MeshRendererComponent>())
+	{
+		out << YAML::Key << "MeshComponent";
+		out << YAML::BeginMap;
+
+		auto& meshComponent = entity.GetComponent<MeshRendererComponent>();
+		if (meshComponent.model) {
+			out << "ModelPath" << YAML::Value << meshComponent.m_path;
+			out << "ModelName" << YAML::Value << meshComponent.model->m_name;
+		}
+		out << "ModelShaderType" << YAML::Value << (int)meshComponent.s_type;
+			
+		out << YAML::EndMap; // MeshComponent
+	}// MeshComponent
+
+	if (entity.HasComponent<RigidBodyComponent>())
+	{
+		out << YAML::Key << "RigidBodyComponent";
+		out << YAML::BeginMap;
+
+		auto& rbcomponent = entity.GetComponent<RigidBodyComponent>();
+		out << "RigidBodyType" << YAML::Value << static_cast<int>(rbcomponent.type);
+
+		out << YAML::EndMap; // RigidBodyComponent
+	}// RigidBodyComponent
+
+
+	if (entity.HasComponent<CollisionBodyComponent>())
+	{
+		out << YAML::Key << "CollisionBodyComponent";
+		out << YAML::BeginMap;
+
+		out << YAML::EndMap; // CollisionBodyComponent
+	}// CollisionBodyComponent
+
+	if (entity.HasComponent<ColliderComponent>())
+	{
+		out << YAML::Key << "ColliderComponent";
+		out << YAML::BeginMap;
+
+		auto& collider = entity.GetComponent<ColliderComponent>();
+		auto shape=collider.m_geometry->GetShape();
+		out << "ColliderType" << YAML::Value << (int)shape;
+		switch (shape) {
+		case Mint::Gshape::box:
+		{
+			Box* box = (Box*)collider.m_geometry;
+			out << "HalfExtent"<< YAML::Value << box->m_half_extents;
+			break;
+		}
+		case Mint::Gshape::sphere:
+		{
+			Sphere* sp = (Sphere*)collider.m_geometry;
+			out << "Radius" << YAML::Value << sp->m_radius;
+			break;
+		}
+		case Mint::Gshape::capsule:
+		{
+			Capsule* cp = (Capsule*)collider.m_geometry;
+			out << "Radius" << YAML::Value << cp->m_radius;
+			out << "HalfHeight" << YAML::Value << cp->m_half_height;
+			break;
+		}
+		}
+
+		out << YAML::EndMap; // ColliderComponent
+	}// ColliderComponent
+
+
+	if (entity.HasComponent<MusicComponent>())
+	{
+		out << YAML::Key << "MusicComponent";
+		out << YAML::BeginMap;
+		auto& music = entity.GetComponent<MusicComponent>();
+		out << "MusicPath" << YAML::Value << music.m_path;
+		out << YAML::EndMap; // ColliderComponent
+	}// musicComponent
+
 	   
 	out << YAML::EndMap; // Entity
 
@@ -250,7 +358,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 	}
 	catch (YAML::ParserException e)
 	{
-		MT_ERROR("Failed to load .hazel file '{0}'\n     {1}", filepath, e.what());
+		MT_ERROR("Failed to load .mint file '{0}'\n     {1}", filepath, e.what());
 		return false;
 	}
 
@@ -282,11 +390,11 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 				// Entities always have transforms
 				auto& tc = deserializedEntity.GetComponent<TransformComponent>();
 				tc.Translation = transformComponent["Translation"].as<glm::vec3>();
-				tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
+				tc.Rotation = transformComponent["Rotation"].as<glm::quat>();
 				tc.Scale = transformComponent["Scale"].as<glm::vec3>();
 			}
 
-			auto cameraComponent = entity["CameraComponent"];
+			YAML::Node cameraComponent = entity["CameraComponent"];
 			if (cameraComponent)
 			{
 				auto& cc = deserializedEntity.AddComponent<CameraComponent>();
@@ -306,9 +414,64 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 				cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 			}
 
+			auto meshComponent = entity["MeshComponent"];
+			if (meshComponent) {
+				auto& meshc = deserializedEntity.AddComponent<MeshRendererComponent>();
+				std::string path = meshComponent["ModelPath"].as<std::string>();
+				meshc.model = Model::loadModelFromOBJ(path);
+				meshc.m_path = path;
+				meshc.model->m_name = meshComponent["ModelName"].as<std::string>();
+				meshc.s_type = static_cast<BuiltinShaderType>(meshComponent["ModelShaderType"].as<int>());
+			}
+
+			auto rigidbodyComponent = entity["RigidBodyComponent"];
+			if (rigidbodyComponent) {
+				auto& rbc = deserializedEntity.AddComponent<RigidBodyComponent>();
+				rbc.type = static_cast<RigidBodyComponent::BodyType>(rigidbodyComponent["RigidBodyType"].as<int>());
+			}
+
+			auto collisionbodyComponent = entity["CollisionBodyComponent"];
+			if (collisionbodyComponent) {
+				auto& cbc = deserializedEntity.AddComponent<CollisionBodyComponent>();
+			}
+
+			auto colliderComponent = entity["ColliderComponent"];
+			if (colliderComponent) {
+				auto& cc = deserializedEntity.AddComponent<ColliderComponent>();
+				auto shape =static_cast<Gshape>(colliderComponent["ColliderType"].as<int>());
+				switch (shape)
+				{
+				case Mint::Gshape::box:
+				{
+					Box* box = new Box();
+					box->m_half_extents = colliderComponent["HalfExtent"].as<glm::vec3>();
+					cc.m_geometry = box;
+					break;
+				}
+				case Mint::Gshape::sphere:
+				{
+					Sphere* sp = new Sphere();
+					sp->m_radius = colliderComponent["Radius"].as<float>();
+					break;
+				}
+				case Mint::Gshape::capsule:
+				{
+					Capsule* cp = new Capsule();
+					cp->m_radius = colliderComponent["Radius"].as<float>();
+					cp->m_half_height = colliderComponent["HalfHeight"].as<float>();
+					break;
+				}
+				}
+			}
+			auto musicComponent = entity["MusicComponent"];
+			if (musicComponent) {
+				auto& mc = deserializedEntity.AddComponent<MusicComponent>();
+				mc.m_path = musicComponent["MusicPath"].as<std::string>();
+				mc.music = CreateRef<MusicBuffer>(mc.m_path.c_str());
+			}
 		}
 	}
-	return false;
+	return true;
 }
 
 bool SceneSerializer::DeserializeRuntime(const std::string& filepath)

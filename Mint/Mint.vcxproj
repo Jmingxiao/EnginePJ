@@ -76,8 +76,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MT_PLATFORM_WINDOWS;MT_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;vendor\mono\include;vendor\filewatch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MT_PLATFORM_WINDOWS;MT_BUILD_DLL;GLFW_INCLUDE_NONE;MT_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;vendor\mono\include;vendor\filewatch;vendor\ImGuizmo;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -99,8 +99,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MT_PLATFORM_WINDOWS;MT_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;vendor\mono\include;vendor\filewatch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MT_PLATFORM_WINDOWS;MT_BUILD_DLL;GLFW_INCLUDE_NONE;MT_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;vendor\mono\include;vendor\filewatch;vendor\ImGuizmo;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -125,8 +125,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;GLFW_INCLUDE_NONE;MT_PLATFORM_WINDOWS;MT_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;vendor\mono\include;vendor\filewatch;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MT_PLATFORM_WINDOWS;MT_BUILD_DLL;GLFW_INCLUDE_NONE;MT_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>src;vendor\spdlog\include;vendor\imgui;vendor\stb_image;vendor\tinyobjloader;vendor\entt;vendor\react3d\include;vendor\mono\include;vendor\filewatch;vendor\ImGuizmo;vendor\yaml-cpp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -172,6 +172,7 @@
     <ClInclude Include="src\Mint\Events\MouseEvent.h" />
     <ClInclude Include="src\Mint\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Mint\Math\AxisAligned.h" />
+    <ClInclude Include="src\Mint\Math\Math.h" />
     <ClInclude Include="src\Mint\Physics\BasicShapes.h" />
     <ClInclude Include="src\Mint\Physics\PhysicsManger.h" />
     <ClInclude Include="src\Mint\Physics\PhysicsTimer.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="src\Mint\Scripting\ScriptEngine.h" />
     <ClInclude Include="src\Mint\Scripting\ScriptGlue.h" />
     <ClInclude Include="src\Mint\Util\FileSystem.h" />
+    <ClInclude Include="src\Mint\Util\PlatFormUtils.h" />
     <ClInclude Include="src\Mint\Util\React3dUtil.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
@@ -210,6 +212,7 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h" />
     <ClInclude Include="vendor\entt\entt.hpp" />
     <ClInclude Include="vendor\stb_image\stb_image.h" />
     <ClInclude Include="vendor\stb_image\stb_image_write.h" />
@@ -229,6 +232,7 @@
     <ClCompile Include="src\Mint\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Mint\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Mint\Math\AxisAligned.cpp" />
+    <ClCompile Include="src\Mint\Math\Math.cpp" />
     <ClCompile Include="src\Mint\Physics\PhysicsManger.cpp" />
     <ClCompile Include="src\Mint\Render\Buffer.cpp" />
     <ClCompile Include="src\Mint\Render\Camera\EditorCamera.cpp" />
@@ -260,9 +264,13 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
     <ClCompile Include="vendor\stb_image\stb_image_write.cpp" />
@@ -273,6 +281,9 @@
     </ProjectReference>
     <ProjectReference Include="vendor\react3d\react3d.vcxproj">
       <Project>{AB39DB3D-1719-5AD9-2031-E5AF8C8FC03A}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\yaml-cpp\yaml-cpp.vcxproj">
+      <Project>{88F1A057-74BE-FB62-9DD7-E90A890331F1}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

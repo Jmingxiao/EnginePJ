@@ -13,6 +13,7 @@ group "Dependencies"
     --include "Mint/vendor/Glad"
     include "Mint/vendor/imgui"
     include "Mint/vendor/react3d"
+	include "Mint/vendor/yaml-cpp"
 group ""
 
 

@@ -9,6 +9,7 @@
 			
 #include"Mint/Core/Input.h"
 #include"Mint/Core/KeyCodes.h"
+#include"Mint/Util/PlatFormUtils.h"
 
 #include"Mint/ImGui/ImGuiLayer.h"
 
@@ -16,6 +17,7 @@
 #include "Mint/Scene/Entity.h"
 #include "Mint/Scene/Scene.h"
 #include "Mint/Scene/ScriptableEntity.h"
+#include "Mint/Scene/SceneSerializer.h"
 
 //render 
 #include "Mint/Render/Renderer.h"

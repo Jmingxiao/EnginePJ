@@ -16,7 +16,8 @@ public:
 	virtual void Blit(const Ref<Framebuffer>& other) override;
 	virtual void Resize(uint32_t width, uint32_t height) override;
 	virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override;
-
+	virtual void BindColorTexture(uint32_t slot = 0, uint32_t index = 0) override;
+	virtual void BindDepthTexture(uint32_t slot = 0) override;
 	virtual void ClearAttachment(uint32_t attachmentIndex, int value) override;
 
 	virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override { MT_ASSERT(index < m_ColorAttachments.size()); return m_ColorAttachments[index]; }

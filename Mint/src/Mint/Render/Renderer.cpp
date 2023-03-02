@@ -52,7 +52,7 @@ void Mint::Renderer::Submit(const Ref<Shader>& shader, Model* model,bool submitm
 	shader->SetMat4("projMatrix", s_SceneData->projMatrix);
 	shader->SetMat4("viewMatrix", s_SceneData->viewMatrix);
 	shader->SetMat4("modelMatrix", transform);
-
+	
 	Model::render(model, shader, submitmat);
 }
 

@@ -2,6 +2,7 @@
 #include "PhysicsManger.h"
 #include "Mint/Util/React3dUtil.h"
 #include "Mint/Scene/Entity.h"
+#include "Mint/Scene/ScriptableEntity.h"
 
 namespace Mint {
 
@@ -116,7 +117,10 @@ namespace Mint {
             auto& e = m_entities[info.entity];
             auto& other = m_entities[info.other];
             MT_ASSERT(e && other);
-            e.OnContact(other, info.type);
+            if (e.HasComponent<NativeScriptComponent>()) {
+                auto& scriptentity = e.GetComponent<NativeScriptComponent>();
+                scriptentity.Instance->OnContact(other, info.type);
+            }
         }
     }
 
@@ -126,7 +130,10 @@ namespace Mint {
             auto& e = m_entities[info.entity];
             auto& other = m_entities[info.other];
             MT_ASSERT(e && other);
-            e.OnTrigger(other, info.type);
+            if (e.HasComponent<NativeScriptComponent>()) {
+                auto& scriptentity = e.GetComponent<NativeScriptComponent>();
+                scriptentity.Instance->OnTrigger(other,info.type);
+            }
         }
     }
     void PhysicsManager::Destroy()

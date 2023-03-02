@@ -20,6 +20,9 @@ project "Mint"
 		"vendor/stb_image/**.h",
 		"vendor/stb_image/**.cpp",
         "vendor/tinyobjloader/**.h",
+
+        "vendor/ImGuizmo/ImGuizmo.h",
+		"vendor/ImGuizmo/ImGuizmo.cpp"
         --"%{prj.name}/vendor/glm/glm/**.hpp",
         --"%{prj.name}/vendor/glm/glm/**.inl",
     }
@@ -27,7 +30,8 @@ project "Mint"
     defines
     {
         "_CRT_SECURE_NO_WARNINGS",
-        --"MT_BUILD_DLL",
+        "MT_PLATFORM_WINDOWS", 
+        "MT_BUILD_DLL",
         "GLFW_INCLUDE_NONE"
     } 
 
@@ -42,6 +46,8 @@ project "Mint"
         "%{IncludeDir.react3d}",
         "%{IncludeDir.mono}",
         "%{IncludeDir.filewatch}",
+        "%{IncludeDir.ImGuizmo}",
+        "%{IncludeDir.yaml_cpp}",
         --"%{IncludeDir.GLFW}",
         --"%{IncludeDir.Glad}",
         --"%{IncludeDir.glm}",
@@ -53,16 +59,16 @@ project "Mint"
         --"Glad",
         "ImGui",
         "react3d",
+        "yaml-cpp",
         "opengl32.lib",
         "%{Library.mono}",
     }
 
+    filter "files:vendor/ImGuizmo/**.cpp"
+	flags { "NoPCH" }
+
     filter "system:windows"
         systemversion "latest"
-        defines
-        {
-            "MT_PLATFORM_WINDOWS", 
-        } 
 
     filter "configurations:Debug"
         defines "MT_DEBUG"

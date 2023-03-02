@@ -17,7 +17,7 @@ Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height, uint32_t m_com
 	return nullptr;
 }
 
-Ref<Texture2D> Texture2D::Create(const std::string& path, uint32_t m_components)
+Ref<Texture2D> Texture2D::Create(const std::string& path, int m_components)
 {
 	switch (Renderer::GetAPI())
 	{

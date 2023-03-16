@@ -37,7 +37,7 @@ struct Renderer3DData
 	Ref<TextureHDR> m_defaultIrr;
 	Ref<TextureHDR> m_defaultReflection;
 
-	float environment_multiplier = 0.0f;
+	float environment_multiplier = 1.0f;
 	float lightIntensity = 2.0f;
 	glm::vec3 lightDir = glm::vec3(0.5f, 1.0f, 0.0f);
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);

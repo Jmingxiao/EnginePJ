@@ -14,7 +14,6 @@ void EditorLayer::OnAttach()
 	defaulttextures.init();
 	m_msfb.init();
 
-
 	m_EditorScene = CreateRef<Scene>();
 	m_ActiveScene = m_EditorScene;
 
@@ -35,11 +34,11 @@ void EditorLayer::OnAttach()
 	m_BoxEntity.AddComponent<ColliderComponent>(box1);
 	m_BoxEntity.AddComponent<MusicComponent>("assets/musics/liz.mp3");
 
-	//m_screenCam = m_ActiveScene->CreateEntity("space Ship");
-	//m_screenCam.AddComponent<MeshRendererComponent>("assets/models/wheatley.obj", "spaceship", BuiltinShaderType::pbr);
-	//auto& sctrans = m_screenCam.GetComponent<TransformComponent>();
-	//sctrans.Translation = glm::vec3(0.f, 5.0f, 3.0f);
-	////sctrans.Scale = glm::vec3(0.4f, 0.4f, 0.4f);
+	m_spaceShip = m_ActiveScene->CreateEntity("space Ship");
+	m_spaceShip.AddComponent<MeshRendererComponent>("assets/models/space-ship.obj", "spaceship", BuiltinShaderType::pbr);
+	auto& sctrans = m_spaceShip.GetComponent<TransformComponent>();
+	sctrans.Translation = glm::vec3(0.f, 5.0f, 3.0f);
+	sctrans.Scale = glm::vec3(0.4f, 0.4f, 0.4f);
 
 	m_editorCam = EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 	m_editorCam.SetPosition({ 0.0f,5.0f,15.0f });
@@ -75,8 +74,6 @@ void EditorLayer::OnUpdate(Timestep ts)
 	RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 	RenderCommand::Clear();
 
-
-
 	switch (m_SceneState)
 	{
 	case SceneState::Edit:
@@ -100,8 +97,6 @@ void EditorLayer::OnUpdate(Timestep ts)
 		break;
 	}
 	}
-
-
 
 	/*m_editorCam.SetControlActive(!isfocused);
 	m_editorCam.OnUpdate(ts);

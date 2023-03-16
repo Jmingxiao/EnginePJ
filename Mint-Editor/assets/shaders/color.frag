@@ -21,7 +21,7 @@ layout(location = 1) out int entid;
 void main()
 {
 	vec3 n = normalize(ws_normal);
-
+	float ambientfactor =0.2f;
 	vec4 color = vec4(material_color, 1.0);
 	if(has_color_texture == 1)
 	{
@@ -36,7 +36,7 @@ void main()
 	const vec3 lightcolor = vec3(1.0);
 	const vec3 lightDir = normalize(vec3(-0.74, -1, 0.68));
 
-	fragmentColor.rgb = color.rgb* max(dot(n, -lightDir), 0.0001)*lightcolor + emission.rgb;
+	fragmentColor.rgb = color.rgb* (max(dot(n, -lightDir), 0.0001)+ambientfactor)*lightcolor + emission.rgb;
 	fragmentColor.a = color.a;
 	entid = entity_id;
 }

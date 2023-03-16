@@ -38,7 +38,7 @@ class EditorLayer : public Layer
 
 	Entity m_planeEntity;
 	Entity m_BoxEntity;
-	Entity m_screenCam;
+	Entity m_spaceShip;
 
 	Entity m_selectEntity;
 	

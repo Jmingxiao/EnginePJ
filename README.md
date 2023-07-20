@@ -11,9 +11,7 @@ if you want to use run the solution then please do the following.
 On windows, use vcpkg and install openal-soft, mpg123, libflac and libogg (you'll probably want the :x64-windows versions). Integrate vcpkg with Visual Studio with vcpkg integrate install if you haven't already, and the solution file should build.
 
 ### DEMO
-<video id="video" controls="" preload="none" poster="">
-      <source id="mp4" src="assets/Engine.mp4" type="video/mp4">
-</video>
+https://github.com/Jmingxiao/EnginePJ/assets/52912517/c3f9d206-a924-4981-91dc-09d38bfc267a
 
 
 ### Current developing branch 

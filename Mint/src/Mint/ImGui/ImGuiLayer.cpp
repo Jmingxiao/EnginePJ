@@ -65,8 +65,6 @@ namespace Mint
 
 	void ImGuiLayer::OnImGuiRender()
 	{
-		//bool show = true;
-		//ImGui::ShowDemoWindow(&show);
 	}
 
 	void ImGuiLayer::OnEvent(Event& e)

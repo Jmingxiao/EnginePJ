@@ -27,7 +27,7 @@ project "Mint-Editor"
             "%{IncludeDir.entt}",
             "%{IncludeDir.react3d}",
             "%{IncludeDir.ImGuizmo}",
-            --"%{IncludeDir.glm}"
+            "%{IncludeDir.glm}"
         }
     
         links{ "Mint" }

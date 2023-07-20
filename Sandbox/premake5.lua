@@ -26,7 +26,7 @@ project "Sandbox"
         "%{wks.location}/Mint/vendor",
         "%{IncludeDir.entt}",
         "%{IncludeDir.react3d}",
-        --"%{IncludeDir.glm}"
+        "%{IncludeDir.glm}"
     }
 
     links{ "Mint" }

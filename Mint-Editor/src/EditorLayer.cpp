@@ -56,12 +56,16 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnUpdate(Timestep ts)
 {
 
-	m_data.timer += ts;
-	if (m_data.timer >0.5f) {
-		m_data.cpumain = ts.GetMilliseconds();
-		m_data.framerate = static_cast<uint32_t>(1/ts.GetSeconds());
-		m_data.timer = 0.0f;
+	m_data.currentTime = Timestep::GetTime();
+	double delta = m_data.currentTime - m_data.lastTime;
+
+	if (delta >= 1) {
+		m_data.framerates={ std::max(1, int(m_data.numFrames / delta)) };
+		m_data.lastTime = m_data.currentTime;
+		m_data.numFrames = -1;
+		m_data.frameTime = float(1000.0 / m_data.framerates);
 	}
+	++m_data.numFrames;
 
 	m_ActiveScene->OnViewportResize((uint32_t)viewportSize.x, (uint32_t)viewportSize.y);
 	if (m_msfb.Resizeviewport(viewportSize))
@@ -299,8 +303,7 @@ void EditorLayer::DrawSettings()
 	auto stats = Mint::Renderer3D::GetStats();
 	ImGui::Text("Draw Calls: %d", stats.DrawCalls);
 	ImGui::Text("Vertices: %d", stats.Verticies);
-	ImGui::Text("FPS: %d", m_data.framerate);
-	ImGui::Text("CPU Main: %f ms", m_data.cpumain);
+	ImGui::Text("FPS: %d", m_data.framerates);
 	if (ImGui::Button("Gizmos Translation"))
 		m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 

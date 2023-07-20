@@ -20,11 +20,10 @@ project "Mint"
 		"vendor/stb_image/**.h",
 		"vendor/stb_image/**.cpp",
         "vendor/tinyobjloader/**.h",
-
         "vendor/ImGuizmo/ImGuizmo.h",
-		"vendor/ImGuizmo/ImGuizmo.cpp"
-        --"%{prj.name}/vendor/glm/glm/**.hpp",
-        --"%{prj.name}/vendor/glm/glm/**.inl",
+		"vendor/ImGuizmo/ImGuizmo.cpp",
+        "%{prj.name}/vendor/glm/glm/**.hpp",
+        "%{prj.name}/vendor/glm/glm/**.inl",
     }
     
     defines
@@ -48,15 +47,15 @@ project "Mint"
         "%{IncludeDir.filewatch}",
         "%{IncludeDir.ImGuizmo}",
         "%{IncludeDir.yaml_cpp}",
-        --"%{IncludeDir.GLFW}",
-        --"%{IncludeDir.Glad}",
-        --"%{IncludeDir.glm}",
+        "%{IncludeDir.GLFW}",
+        "%{IncludeDir.Glad}",
+        "%{IncludeDir.glm}",
     }
 
     links
     {
-        --"GLFW",
-        --"Glad",
+        "GLFW",
+        "Glad",
         "ImGui",
         "react3d",
         "yaml-cpp",

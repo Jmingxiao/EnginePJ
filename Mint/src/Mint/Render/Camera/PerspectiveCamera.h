@@ -19,7 +19,7 @@ public:
 protected:
 	void RecalculateViewMatrix();
 protected:
-	float pitch = 0.0f, yaw = -90.0f, roll = 0.0f;
+	float pitch = 0.0f, yaw =0.0f, roll = 0.0f;
 	float m_fov = 45.0f, m_aspectRatio = 1.8f, m_near = 0.1f, m_far = 1000.0f;
 	glm::vec3 forward = { 0.0f, 0.0f, 1.0f },right = { -1.0f, 0.0f, 0.0f },up = { 0.0f, 1.0f, 0.0f };
 };

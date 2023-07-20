@@ -91,9 +91,10 @@ private:
 private:
 
 	struct Statistic {
-		uint32_t framerate{};
-		float cpumain{};
-		float timer{};
+		double lastTime, currentTime;
+		int numFrames;
+		int framerates;
+		float frameTime;
 	};
 
 	Statistic m_data;

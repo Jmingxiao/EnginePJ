@@ -1,8 +1,8 @@
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
---IncludeDir["GLFW"] = "Mint/vendor/GLFW/include"
---IncludeDir["Glad"] = "Mint/vendor/Glad/include"
---IncludeDir["glm"] = "Mint/vendor/glm"
+IncludeDir["GLFW"] = "%{wks.location}/Mint/vendor/GLFW/include"
+IncludeDir["Glad"] = "%{wks.location}/Mint/vendor/Glad/include"
+IncludeDir["glm"] =  "%{wks.location}/Mint/vendor/glm"
 IncludeDir["ImGui"]     = "%{wks.location}/Mint/vendor/imgui"
 IncludeDir["stb_image"] = "%{wks.location}/Mint/vendor/stb_image"
 IncludeDir["objloader"] = "%{wks.location}/Mint/vendor/tinyobjloader"
